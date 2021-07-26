@@ -76,6 +76,14 @@ As seen in the diagram, a total of three business capabilities have been identif
 
 Having each microservice identified, it is now possible to apply more design decision in order to strength the system. Typically, microservices each have their own databases, to avoid single point of failures in the data layer (Database per Service). CQRS (Command-Query Responsibility Segregation) could also be applied to reduce latency in the read/write operations, but that's a little bit overkill given the system dimension, as well as the time to develop. API Gateway is a bonus for a more production-ready system, as it serves as a firewall, threshold and load-balancer for the microservices.
 
+-----
+
+For developing the system, I've selected the following libraries and tools:
+
+- [Echo](https://github.com/labstack/echo) as the web framework (serves its purpose, easy to use and had prior experience with it);
+- [gorm](https://github.com/go-gorm/gorm) as the "ORM" (also prior experience with);
+- API Gateway... TBD
+
 ## Conventions
 
 For naming [2]:
