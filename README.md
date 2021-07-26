@@ -84,6 +84,8 @@ For developing the system, I've selected the following libraries and tools:
 - [gorm](https://github.com/go-gorm/gorm) as the "ORM" (also prior experience with);
 - API Gateway... TBD
 
+Golang version: `1.16`
+
 ## Conventions
 
 For naming [2]:
