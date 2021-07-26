@@ -1,6 +1,6 @@
 # sword-health-technical-challenge
 
-The present repository contains all source used to perform SWORD Health technical challenge. I've chosen `Golang` as the primary programming language for three reasons: its the job position intended language, its rapid for prototyping and prevents from nasty bugs such as null pointers and exceptions. To produce a more valuable, production result, it was decided to follow some strict conventions as documented in the section bellow. These conventions are both suggestions from the official Golang team and past members [2], [3], as well as the community in general [1].
+The present repository contains all source used to perform SWORD Health technical challenge. I've chosen `Golang` as the primary programming language for three reasons: its the job position intended language, its rapid for prototyping and prevents from nasty bugs such as null pointers and exceptions. To produce a more valuable, production result, it was decided to follow some strict conventions as documented in the section below. These conventions are both suggestions from the official Golang team and past members [2], [3], as well as the community in general [1].
 
 ## Challenge
 
@@ -55,6 +55,26 @@ To better visualize these domain concepts, the following domain diagram is propo
 ![domain_diagram](docs/assets/sword_health_technical_challenge_domain_diagram.png)
 
 <center><i>Figure 1 - Domain Diagram illustrating the domain concepts relationships, with UML (Tool: draw.io)</i></center>
+
+Laid down the domain concepts, more architecture decision can be made. The monolith vs micro-service decision can be settle down based on what is known so far. Following a monolith approach would be a quick way to build and ship the system, but it suffers from several issues such as:
+
+- Domain scaling: if more and more concepts are introduced, the system becomes a giant ball-of-mud;
+- Too much responsibilities: Having all the code and runtime for the users, authentication, authorization, tasks, permissions and notifications on a single system is hard to both develop and maintain;
+- Cross-cutting concerns: performance, single point of failure, etc.
+
+Having a giant system is not acceptable, so there is the need to cut it down in pieces. To follow a micro-service approach, it is needed to apply a strategy to divide the system in smaller services. There are already plenty famous patterns that are adopted and adapted by engineers to achieve this (e.g., business capabilities, bounded-contexts, etc), so no need to reinvent the wheel on this one.
+
+Bounded-Contexts is a design pattern from DDD (Domain Driven Design), and intends to segregate the monolith domain in different smaller domains (i.e., sub-domain). Typically, these smaller domains are identified by aggregate roots and ultimately there is an identification of a microservice per aggregate root (similar to database per service). This segregation is convenient to apply when the domain is quite big and there is time to perform such seperation. Unfortunately, these conditions do not met for this challenge, so applying the bounded-context pattern is rejected. Division by business capabilities on the other hand is rather simpler, not requiring so much time. There are different ways to identify such capabilities, such as through system functionalities/use cases.
+
+The diagram below represents the challenge functionalities connected to each capability:
+
+![business_capabilities_diagram](docs/assets/sword_health_technical_challenge_business_capabilities.png)
+
+<center><i>Figure 2 - Diagram illustrating the business capabilities decomposed by the product functionalities (Tool: draw.io)</i></center>
+
+As seen in the diagram, a total of three business capabilities have been identified: tasks, notifications and authorization management. Each of these capabilities identify a microservice.
+
+Having each microservice identified, it is now possible to apply more design decision in order to strength the system. Typically, microservices each have their own databases, to avoid single point of failures in the data layer (Database per Service). CQRS (Command-Query Responsibility Segregation) could also be applied to reduce latency in the read/write operations, but that's a little bit overkill given the system dimension, as well as the time to develop. API Gateway is a bonus for a more production-ready system, as it serves as a firewall, threshold and load-balancer for the microservices.
 
 ## Conventions
 
