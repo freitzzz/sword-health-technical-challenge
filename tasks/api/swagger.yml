@@ -31,6 +31,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TaskPage'
+        400:
+          description: Input is not valid
+          content:
+            application/json:
+              schema:
+                anyOf: [
+                  $ref: '#/components/schemas/InvalidParam'
+                ]
         401:
           description: Invalid authorization access
         404:
@@ -202,6 +210,23 @@ components:
         summary:
           type: string
           maxLength: 2500
+    InvalidParam:
+      required:
+        - message
+        - type
+        - name
+      type: object
+      properties:
+        message: 
+          type: string
+          description: Detailed message on why the parameter is in an invalid state
+        type:
+          type: string
+          enum: [Query, Path, Body, Header]
+          description: Type of parameter
+        name:
+          type: string
+          description: Parameter name
   securitySchemes:
     auth:
       type: http
