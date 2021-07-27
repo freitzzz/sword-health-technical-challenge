@@ -3,7 +3,7 @@ package data
 import (
 	"gorm.io/gorm"
 
-	domain "github.com/freitzzz/sword-health-technical-challenge/tasks/internal/domain"
+	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/domain"
 )
 
 const (
