@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/data"
+	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/logging"
 )
 
 func main() {
@@ -11,9 +12,16 @@ func main() {
 	db, oerr := data.OpenDbConnection()
 
 	if oerr != nil {
-		panic(fmt.Sprintf("Failure to open DB connection\n%s", oerr))
+
+		logging.LogError(fmt.Sprintf("Failure to open DB connection\n%s", oerr))
+
+		panic("Migrations require DB connection")
 	}
 
-	data.RunMigration(db)
+	merr := data.RunMigration(db)
+
+	if merr != nil {
+		logging.LogError(merr.Error())
+	}
 
 }
