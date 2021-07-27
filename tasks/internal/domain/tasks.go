@@ -8,8 +8,9 @@ import (
 )
 
 type Task struct {
-	UserID  string
-	Summary string
+	UserID   string
+	Summary  string
+	Disabled bool
 	gorm.Model
 }
 
@@ -25,8 +26,9 @@ func New(uid string, summary string) (Task, error) {
 		err = errors.New("task summary exceeds 2500 characters")
 	} else {
 		task = Task{
-			UserID:  uid,
-			Summary: trimSummary,
+			UserID:   uid,
+			Summary:  trimSummary,
+			Disabled: false,
 		}
 	}
 
