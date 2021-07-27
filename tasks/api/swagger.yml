@@ -26,7 +26,7 @@ paths:
           description: Pagination index of the tasks being retrieved
       responses:
         200:
-          description: Tasks page retrieved
+          description: Up to 20 tasks retrieved
           content: 
             application/json:
               schema:
@@ -41,8 +41,6 @@ paths:
                 ]
         401:
           description: Invalid authorization access
-        404:
-          description: Task not found
       security:
       - auth:
         - write:tasks
@@ -70,8 +68,6 @@ paths:
           description: Summary reached maximum of 2500 characters
         401:
           description: Invalid authorization access
-        404:
-          description: Task not found
       security:
       - auth:
         - write:tasks
