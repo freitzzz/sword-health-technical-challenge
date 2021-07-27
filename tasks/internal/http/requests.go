@@ -15,10 +15,10 @@ type TaskPage []struct {
 	UserID string `json:"userId"`
 }
 
-type Task struct {
+type TaskView struct {
 	ID                 string `json:"id"`
 	UserID             string `json:"userId"`
 	Summary            string `json:"summary"`
-	CreatedTimestampMS int    `json:"createdTimestampMS"`
-	UpdatedTimestampMS int    `json:"updatedTimestampMS"`
+	CreatedTimestampMS int64  `json:"createdTimestampMS"`
+	UpdatedTimestampMS int64  `json:"updatedTimestampMS"`
 }
