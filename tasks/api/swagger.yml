@@ -57,7 +57,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskUpdate'
+              $ref: '#/components/schemas/TaskPerform'
         required: true
       responses:
         201:
@@ -202,6 +202,14 @@ components:
         userId:
           type: string
           description: External ID of the user that performed the task
+    TaskPerform:
+      required:
+      - summary
+      type: object
+      properties:
+        summary:
+          type: string
+          maxLength: 2500
     TaskUpdate:
       required:
       - summary
