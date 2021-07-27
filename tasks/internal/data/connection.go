@@ -9,17 +9,17 @@ import (
 )
 
 const (
-	_MySQLUsernameEnvKey = "mysql.user"
-	_MySQLPasswordEnvKey = "mysql.pass"
-	_MySQLAddressEnvKey  = "mysql.address"
-	_MySQLDatabaseEnvKey = "mysql.database"
+	mySQLUsernameEnvKey = "mysql_user"
+	mySQLPasswordEnvKey = "mysql_pass"
+	mySQLAddressEnvKey  = "mysql_address"
+	mySQLDatabaseEnvKey = "mysql_database"
 )
 
 var (
-	_MySQLUsername = os.Getenv(_MySQLUsernameEnvKey)
-	_MySQLPassword = os.Getenv(_MySQLPasswordEnvKey)
-	_MySQLAddress  = os.Getenv(_MySQLAddressEnvKey)
-	_MySQLDatabase = os.Getenv(_MySQLDatabaseEnvKey)
+	mySQLUsername = os.Getenv(mySQLUsernameEnvKey)
+	mySQLPassword = os.Getenv(mySQLPasswordEnvKey)
+	mySQLAddress  = os.Getenv(mySQLAddressEnvKey)
+	mySQLDatabase = os.Getenv(mySQLDatabaseEnvKey)
 )
 
 func OpenDbConnection() (*gorm.DB, error) {
@@ -29,7 +29,7 @@ func OpenDbConnection() (*gorm.DB, error) {
 	// https://github.com/go-sql-driver/mysql#dsn-data-source-name%20for%20details
 
 	return gorm.Open(mysql.New(mysql.Config{
-		DSN:                       fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", _MySQLUsername, _MySQLPassword, _MySQLAddress, _MySQLDatabase),
+		DSN:                       fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", mySQLUsername, mySQLPassword, mySQLAddress, mySQLDatabase),
 		DefaultStringSize:         256,
 		DisableDatetimePrecision:  true,
 		DontSupportRenameIndex:    true,

@@ -10,7 +10,7 @@ import (
 
 const (
 	environmentEnvKey   = "env"
-	logsFilePathEnvKey  = "logging.absoluteFilePath"
+	logsFilePathEnvKey  = "logging_absolute_filepath"
 	infoLoggerPrefix    = "INFO: "
 	warningLoggerPrefix = "WARNING: "
 	errorLoggerPrefix   = "ERROR: "
