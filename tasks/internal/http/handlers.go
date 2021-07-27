@@ -6,6 +6,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func RegisterHandlers(e *echo.Echo) {
+	e.GET(getTasks, GetTasks)
+	e.POST(performTask, PerformTask)
+	e.GET(getTask, GetTask)
+	e.GET(updateTask, UpdateTask)
+	e.GET(deleteTask, DeleteTask)
+}
+
 func GetTasks(c echo.Context) error {
 
 	_, err := ParsePaginationIndex(c.QueryParam(paginationIndex))
@@ -18,7 +26,7 @@ func GetTasks(c echo.Context) error {
 
 }
 
-func CreateTask(c echo.Context) error {
+func PerformTask(c echo.Context) error {
 
 	var tp TaskPerform
 
