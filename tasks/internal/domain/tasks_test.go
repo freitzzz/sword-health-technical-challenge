@@ -52,3 +52,25 @@ func TestNewTaskTrimsSpaces(t *testing.T) {
 	}
 
 }
+
+func TestDisableMarksDisablePropertyAsTrue(t *testing.T) {
+	uid := "x"
+	summary := "x"
+
+	task, _ := New(uid, summary)
+
+	disabledPropBefore := task.Disabled
+
+	Disable(&task)
+
+	disabledPropAfter := task.Disabled
+
+	if disabledPropBefore == disabledPropAfter {
+		t.Fatalf("Disable properties before and after should be different")
+	}
+
+	if !disabledPropAfter {
+		t.Fatalf("Disable procedure should mark Disabled property as false, but condition is not met")
+	}
+
+}

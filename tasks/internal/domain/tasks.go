@@ -34,3 +34,7 @@ func New(uid string, summary string) (Task, error) {
 
 	return task, err
 }
+
+func Disable(task *Task) {
+	task.Disabled = true
+}
