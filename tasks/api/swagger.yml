@@ -1,0 +1,209 @@
+openapi: 3.0.1
+info:
+  title: Tasks Service
+  description: Open API 3.0 documentation for tasks service RESTless API
+  contact:
+    email: apiteam@swagger.io
+  version: 1.0.0
+externalDocs:
+  description: SWORD Health technical challenge
+  url: https://github.com/freitzzz/sword-health-technical-challenge
+tags:
+- name: tasks
+  description: Perform actions on tasks
+paths:
+  /tasks:
+    get:
+      tags:
+      - tasks
+      summary: Paginated list of tasks
+      operationId: getTasks
+      parameters:
+        - in: query
+          name: index
+          schema:
+            type: integer
+          description: Pagination index of the tasks being retrieved
+      responses:
+        200:
+          description: Tasks page retrieved
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskPage'
+        401:
+          description: Invalid authorization access
+        404:
+          description: Task not found
+      security:
+      - auth:
+        - write:tasks
+        - read:tasks
+    post:
+      tags:
+      - tasks
+      summary: Perform task
+      operationId: postTasks
+      requestBody:
+        description: Task summary
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+        required: true
+      responses:
+        201:
+          description: Task created
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        400:
+          description: Summary reached maximum of 2500 characters
+        401:
+          description: Invalid authorization access
+        404:
+          description: Task not found
+      security:
+      - auth:
+        - write:tasks
+        - read:tasks
+  /tasks/{id}:
+    get:
+      tags:
+      - tasks
+      summary: Detailed information of task
+      operationId: getTask
+      parameters: 
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: External task ID
+      responses:
+        200:
+          description: Task retrieved
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        401:
+          description: Invalid authorization access
+        404:
+          description: Task not found
+      security:
+      - auth:
+        - write:tasks
+        - read:tasks
+    put:
+      tags:
+      - tasks
+      summary: Update an existing task
+      operationId: updateTask
+      requestBody:
+        description: Task summary
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+        required: true
+      parameters: 
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: External task ID
+      responses:
+        200:
+          description: Task updated
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        400:
+          description: Summary reached maximum of 2500 characters
+        401:
+          description: Invalid authorization access
+        404:
+          description: Task not found
+      security:
+      - auth:
+        - write:tasks
+        - read:tasks
+    delete:
+      tags:
+      - tasks
+      summary: Delete task
+      operationId: deleteTask
+      parameters: 
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: External task ID
+      responses:
+        204:
+          description: Task deleted
+        401:
+          description: Invalid authorization access
+        404:
+          description: Task not found
+      security:
+      - auth:
+        - write:tasks
+        - read:tasks
+components:
+  schemas:
+    TaskPage:
+      type: array
+      items:
+        $ref: '#/components/schemas/TaskFraction'
+    Task:
+      required:
+        - id
+        - userId
+        - summary
+        - createdTimestampMS
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+          description: External ID of the user that performed the task
+        summary:
+          type: string
+          maxLength: 2500
+        createdTimestampMS:
+          type: integer
+          format: int64
+        updatedTimestampMS:
+          type: integer
+          format: int64
+    TaskFraction:
+      required:
+      - id
+      - userId
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+          description: External ID of the user that performed the task
+    TaskUpdate:
+      required:
+      - summary
+      type: object
+      properties:
+        summary:
+          type: string
+          maxLength: 2500
+  securitySchemes:
+    auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
