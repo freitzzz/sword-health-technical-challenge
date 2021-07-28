@@ -27,13 +27,21 @@ func RegisterHandlers(e *echo.Echo) {
 
 func GetTasks(c echo.Context) error {
 
-	_, err := ParsePaginationIndex(c.QueryParam(paginationIndex))
+	pidx, pperr := ParsePaginationIndex(c.QueryParam(paginationIndex))
 
-	if err != nil {
+	if pperr != nil {
 		return InvalidParamBadRequest(c, paginationIndexNotInteger)
 	}
 
-	return c.String(http.StatusOK, "")
+	db, uc, rerr := requestEssentials(c)
+
+	if rerr != nil {
+		return rerr
+	}
+
+	tasks := getTasksFromDb(c, db, uc, pidx)
+
+	return Ok(c, ToTaskPage(tasks))
 
 }
 
@@ -49,10 +57,10 @@ func PerformTask(c echo.Context) error {
 
 func GetTask(c echo.Context) error {
 
-	db, uc, tid, err := requestEssentialsWithTaskID(c)
+	db, uc, tid, rerr := requestEssentialsWithTaskID(c)
 
-	if err != nil {
-		return err
+	if rerr != nil {
+		return rerr
 	}
 
 	task, qerr := getTaskFromDb(c, db, uc, tid)
@@ -67,10 +75,10 @@ func GetTask(c echo.Context) error {
 
 func UpdateTask(c echo.Context) error {
 
-	db, uc, tid, err := requestEssentialsWithTaskID(c)
+	db, uc, tid, rerr := requestEssentialsWithTaskID(c)
 
-	if err != nil {
-		return err
+	if rerr != nil {
+		return rerr
 	}
 
 	task, qerr := getTaskFromDb(c, db, uc, tid)
@@ -104,10 +112,10 @@ func UpdateTask(c echo.Context) error {
 
 func DeleteTask(c echo.Context) error {
 
-	db, uc, tid, err := requestEssentialsWithTaskID(c)
+	db, uc, tid, rerr := requestEssentialsWithTaskID(c)
 
-	if err != nil {
-		return err
+	if rerr != nil {
+		return rerr
 	}
 
 	task, qerr := getTaskFromDb(c, db, uc, tid)
@@ -194,4 +202,17 @@ func getTaskFromDb(c echo.Context, db *gorm.DB, uc UserContext, tid int) (*domai
 	} else {
 		return task, nil
 	}
+}
+
+func getTasksFromDb(c echo.Context, db *gorm.DB, uc UserContext, pidx int) []*domain.Task {
+	var tasks []*domain.Task
+
+	if IsTechnician(uc) {
+		tasks = data.QueryUserTasks(db, uc.ID, pidx)
+	} else {
+		tasks = data.QueryTasks(db, pidx)
+	}
+
+	return tasks
+
 }

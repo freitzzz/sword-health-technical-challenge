@@ -10,7 +10,7 @@ import (
 // Tooled with json-go-struct mapper: https://mholt.github.io/json-to-go/
 
 type TaskPage []struct {
-	ID     string `json:"id"`
+	ID     uint   `json:"id"`
 	UserID string `json:"userId"`
 }
 
@@ -50,6 +50,24 @@ func ToTaskView(task domain.Task) TaskView {
 		CreatedTimestampMS: task.CreatedAt.Unix(),
 		UpdatedTimestampMS: task.UpdatedAt.Unix(),
 	}
+}
+
+func ToTaskPage(tasks []*domain.Task) TaskPage {
+
+	tp := make(TaskPage, len(tasks))
+
+	for i, t := range tasks {
+		tp[i] = struct {
+			ID     uint   "json:\"id\""
+			UserID string "json:\"userId\""
+		}{
+			ID:     t.ID,
+			UserID: t.UserID,
+		}
+	}
+
+	return tp
+
 }
 
 func InvalidParamBadRequest(c echo.Context, ip InvalidParam) error {
