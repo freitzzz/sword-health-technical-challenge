@@ -199,7 +199,9 @@ func requestEssentialsWithTaskID(c echo.Context) (*gorm.DB, UserContext, int, er
 		logging.LogError("Task ID parse not successful, middlware allowed it in the first place")
 		logging.LogError(terr.Error())
 
-		return db, uc, tid, InternalServerError(c)
+		InternalServerError(c)
+
+		return db, uc, tid, terr
 	}
 
 	return db, uc, tid, nil
@@ -219,7 +221,10 @@ func getTaskFromDb(c echo.Context, db *gorm.DB, uc UserContext, tid int) (*domai
 	if qerr != nil {
 		logging.LogWarning(fmt.Sprintf("User %s with role %d tried to access task %d, but task was not found", uc.ID, uc.Role, tid))
 		logging.LogError(qerr.Error())
-		return task, NotFound(c)
+
+		NotFound(c)
+
+		return task, qerr
 	} else {
 		return task, nil
 	}
