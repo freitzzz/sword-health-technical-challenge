@@ -109,6 +109,11 @@ For developing the system, I've selected the following libraries and tools:
 
 Golang version: `1.16`
 
+## Outcomes
+
+Major pain points, less proficient, etc...
+Things to improve
+
 ## Conventions
 
 For naming [2]:
