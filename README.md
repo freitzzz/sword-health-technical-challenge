@@ -115,6 +115,39 @@ Major pain points, less proficient, etc...
 Things to improve
 Encryption a little bit ugly
 
+## Testing
+
+Get Tasks
+
+```
+curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks?index=0' -i
+```
+
+Create Task
+
+```
+curl -XPOST -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" -d '{"summary":"abc"}' 'http://localhost/tasks' -i
+```
+
+Get Task
+
+```
+curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks/:id' -i
+```
+
+Update Task
+
+```
+curl -XPUT -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" -d '{"summary":"abc"}' 'http://localhost/tasks/:id' -i
+```
+
+Delete Task
+
+```
+curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks/:id' -i
+```
+
+
 ## Conventions
 
 For naming [2]:
