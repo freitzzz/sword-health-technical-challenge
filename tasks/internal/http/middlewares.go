@@ -18,12 +18,12 @@ const (
 
 func RegisterMiddlewares(e *echo.Echo, db *gorm.DB) {
 
-	e.Use(DbAccessMiddleware(db))
-	e.Use(ResourceIdentifierValidationMiddleware())
+	e.Use(dbAccessMiddleware(db))
+	e.Use(resourceIdentifierValidationMiddleware())
 
 }
 
-func DbAccessMiddleware(db *gorm.DB) echo.MiddlewareFunc {
+func dbAccessMiddleware(db *gorm.DB) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Set(dbMiddlewareKey, db)
@@ -33,7 +33,7 @@ func DbAccessMiddleware(db *gorm.DB) echo.MiddlewareFunc {
 	}
 }
 
-func ResourceIdentifierValidationMiddleware() echo.MiddlewareFunc {
+func resourceIdentifierValidationMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			params := c.ParamNames()
@@ -51,7 +51,7 @@ func ResourceIdentifierValidationMiddleware() echo.MiddlewareFunc {
 	}
 }
 
-func TranslateHeadersInUserContextMiddleware() echo.MiddlewareFunc {
+func translateHeadersInUserContextMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 
@@ -70,6 +70,29 @@ func TranslateHeadersInUserContextMiddleware() echo.MiddlewareFunc {
 			uc := UserContext{ID: uid, Role: role}
 
 			c.Set(ucMiddlewareKey, uc)
+			next(c)
+
+			return nil
+		}
+	}
+}
+
+func onlyAllowTechnicianMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+
+			uc, uok := c.Get(ucMiddlewareKey).(UserContext)
+
+			if !uok {
+				logging.LogError("User Context not available in middleware")
+
+				return InternalServerError(c)
+			}
+
+			if !IsTechnician(uc) {
+				return NotAuthorized(c)
+			}
+
 			next(c)
 
 			return nil
