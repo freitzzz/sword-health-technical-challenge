@@ -64,7 +64,7 @@ func PerformTask(c echo.Context) error {
 		return InvalidParamBadRequest(c, summaryExceeds2500Characters)
 	}
 
-	_, ierr := data.InsertTask(db, task)
+	itask, ierr := data.InsertTask(db, task)
 
 	if ierr != nil {
 		logging.LogError("Failed to insert task on database after creating it")
@@ -73,7 +73,7 @@ func PerformTask(c echo.Context) error {
 		return InternalServerError(c)
 	}
 
-	return Created(c, ToTaskView(task, cb))
+	return Created(c, ToTaskView(*itask, cb))
 
 }
 
