@@ -1,0 +1,99 @@
+openapi: 3.0.1
+info:
+  title: Notifications Service
+  description: Open API 3.0 documentation for notifications service RESTless API
+  version: 1.0.0
+externalDocs:
+  description: SWORD Health technical challenge
+  url: https://github.com/freitzzz/sword-health-technical-challenge
+tags:
+  - name: notifications
+    description: Perform actions on notifications
+paths:
+  /notifications:
+    get:
+      tags:
+        - notifications
+      summary: Non read notifications
+      operationId: getNotifications
+      responses:
+        200:
+          description: 0 or more notifications retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationPage"
+        401:
+          description: Invalid authorization access
+      security:
+        - auth:
+            - write:notifications
+            - read:notifications
+        - userid:
+            - write:notifications
+            - read:notifications
+        - userrole:
+            - write:notifications
+            - read:notifications
+  /notifications{id}:
+    delete:
+      tags:
+        - notifications
+      summary: Mark notification as read
+      operationId: deleteNotification
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Notification identifier
+      responses:
+        204:
+          description: Notification marked as read
+        401:
+          description: Invalid authorization access
+        404:
+          description: Notification not found
+      security:
+        - auth:
+            - write:notifications
+            - read:notifications
+        - userid:
+            - write:notifications
+            - read:notifications
+        - userrole:
+            - write:notifications
+            - read:notifications
+components:
+  schemas:
+    NotificationPage:
+      type: array
+      items:
+        $ref: "#/components/schemas/Notification"
+    Notification:
+      required:
+        - id
+        - message
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        message:
+          type: string
+          description: Notification message
+  securitySchemes:
+    auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    userid:
+      type: apiKey
+      in: header
+      name: X-User-ID
+    userrole:
+      type: apiKey
+      in: header
+      name: X-User-Role
