@@ -1,7 +1,6 @@
 package http
 
 import (
-	"crypto/cipher"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -17,11 +16,12 @@ const (
 	ucMiddlewareKey = "uc"
 )
 
-func RegisterMiddlewares(e *echo.Echo, db *gorm.DB, cb cipher.Block) {
+func RegisterMiddlewares(e *echo.Echo, db *gorm.DB) {
 
 	e.Use(dbAccessMiddleware(db))
 	e.Use(resourceIdentifierValidationMiddleware())
 	e.Use(translateHeadersInUserContextMiddleware())
+	e.Use(onlyAllowManagerMiddleware())
 	e.Use(loggingMiddleware())
 
 }

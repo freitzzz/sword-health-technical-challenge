@@ -1,10 +1,6 @@
 package domain
 
 import (
-	"crypto/cipher"
-	"errors"
-	"strings"
-
 	"gorm.io/gorm"
 )
 
@@ -18,14 +14,13 @@ type Notification struct {
 func New(uid string, message string) Notification {
 
 	return Notification{
-		UserID:   uid,
-		Message:  message
-		Read: false,
+		UserID:  uid,
+		Message: message,
+		Read:    false,
 	}
 
 }
 
-func MarkAsRed(notification *Notification) {
+func MarkAsRead(notification *Notification) {
 	notification.Read = true
 }
-

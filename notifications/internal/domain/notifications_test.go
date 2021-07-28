@@ -8,7 +8,7 @@ func TestMarkAsReadMarksReadPropertyAsTrue(t *testing.T) {
 	uid := "x"
 	message := "x"
 
-	notification, _ := New(uid, message)
+	notification := New(uid, message)
 
 	readPropBefore := notification.Read
 
