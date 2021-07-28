@@ -22,3 +22,8 @@ type TaskView struct {
 	CreatedTimestampMS int64  `json:"createdTimestampMS"`
 	UpdatedTimestampMS int64  `json:"updatedTimestampMS"`
 }
+
+type UserContext struct {
+	ID   string
+	Role int
+}
