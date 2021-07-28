@@ -5,28 +5,17 @@ import (
 	"crypto/cipher"
 	"os"
 	"strings"
-
-	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/logging"
 )
 
 const (
 	taskSummaryAESKeyEnvKey = "task_summary_aes_key"
 )
 
-func createTaskSummaryCipher() cipher.Block {
+func LoadTaskSummaryCipher() (cipher.Block, error) {
 
 	key := os.Getenv(taskSummaryAESKeyEnvKey)
 
-	block, cerr := aes.NewCipher([]byte(key))
-
-	if cerr != nil {
-		logging.LogError("Failed to create AES Cipher for task summary encryption")
-		logging.LogError(cerr.Error())
-
-		panic("Cannot proceed without cipher for encrpyting task summary")
-	}
-
-	return block
+	return aes.NewCipher([]byte(key))
 
 }
 
