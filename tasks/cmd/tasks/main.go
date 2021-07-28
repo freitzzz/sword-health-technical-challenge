@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/data"
-	http "github.com/freitzzz/sword-health-technical-challenge/tasks/internal/http"
+	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/http"
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/logging"
 	"github.com/labstack/echo/v4"
 )
@@ -13,6 +13,8 @@ func main() {
 	e := echo.New()
 
 	db, oerr := data.OpenDbConnection()
+
+	defer e.Close()
 
 	if oerr != nil {
 
