@@ -3,6 +3,7 @@ package domain
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/hex"
 	"os"
 	"strings"
 )
@@ -35,14 +36,16 @@ func encryptSummary(block cipher.Block, summary string) string {
 
 	block.Encrypt(encryptedSummary, []byte(summaryToEncrypt))
 
-	return string(encryptedSummary)
+	return hex.EncodeToString(encryptedSummary)
 }
 
 func decryptSummary(block cipher.Block, summary string) string {
 
-	decryptedSummary := make([]byte, len(summary))
+	decodedDecryptedSummary, _ := hex.DecodeString(summary)
 
-	block.Decrypt(decryptedSummary, []byte(summary))
+	decryptedSummary := make([]byte, len(decodedDecryptedSummary))
+
+	block.Decrypt(decryptedSummary, decodedDecryptedSummary)
 
 	return strings.TrimSpace(string(decryptedSummary))
 

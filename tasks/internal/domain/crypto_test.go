@@ -2,6 +2,7 @@ package domain
 
 import (
 	"crypto/aes"
+	"encoding/hex"
 	"strings"
 	"testing"
 )
@@ -18,7 +19,7 @@ func TestEncryptSummaryReturnsEncryptedStringOfSummaryBasedOnProvidedCipherBlock
 
 	block.Encrypt(expectedecryptedSummaryBytes, []byte(summary))
 
-	expectedecryptedSummary := string(expectedecryptedSummaryBytes)
+	expectedecryptedSummary := hex.EncodeToString(expectedecryptedSummaryBytes)
 
 	if encryptedSummary != expectedecryptedSummary {
 		t.Fatalf("Function output is different than the expected encrypted summary: \nOutput: %s\nExpected: %s", encryptedSummary, expectedecryptedSummary)
@@ -34,11 +35,11 @@ func TestEncryptSummaryReturnsEncryptedStringOfSummaryWithPaddingSpacesIfItsSize
 
 	encryptedSummary := encryptSummary(block, summary)
 
-	expectedecryptedSummaryBytes := make([]byte, aes.BlockSize)
+	expectedEncryptedSummaryBytes := make([]byte, aes.BlockSize)
 
-	block.Encrypt(expectedecryptedSummaryBytes, []byte(summary+" "))
+	block.Encrypt(expectedEncryptedSummaryBytes, []byte(summary+" "))
 
-	expectedecryptedSummary := string(expectedecryptedSummaryBytes)
+	expectedecryptedSummary := hex.EncodeToString(expectedEncryptedSummaryBytes)
 
 	if encryptedSummary != expectedecryptedSummary {
 		t.Fatalf("Function output is different than the expected encrypted summary: \nOutput: %s\nExpected: %s", encryptedSummary, expectedecryptedSummary)
