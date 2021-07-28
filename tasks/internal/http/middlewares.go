@@ -1,6 +1,7 @@
 package http
 
 import (
+	"crypto/cipher"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 
 const (
 	dbMiddlewareKey = "db"
+	cbMiddlewareKey = "cb"
 	ucMiddlewareKey = "uc"
 )
 
@@ -28,6 +30,16 @@ func dbAccessMiddleware(db *gorm.DB) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Set(dbMiddlewareKey, db)
+			next(c)
+			return nil
+		}
+	}
+}
+
+func cipherBlockAccessMiddleware(cb cipher.Block) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Set(cbMiddlewareKey, cb)
 			next(c)
 			return nil
 		}

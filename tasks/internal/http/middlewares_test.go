@@ -1,9 +1,12 @@
 package http
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/labstack/echo/v4"
@@ -287,6 +290,33 @@ func TestTranslateHeadersInUserContextMiddlewareSetsUserContextIfUserRoleValueIs
 
 	if !ucok {
 		t.Fatalf("An user role with value 1 was passed on headers, so it should set user context on the request, but it was not provided")
+	}
+
+}
+
+func TestCipherBlockMiddlewareProvidesCipherBlockInstanceUsingCbMiddlewareKey(t *testing.T) {
+	e := echo.New()
+
+	cb, _ := aes.NewCipher([]byte(strings.Repeat("x", 32)))
+
+	e.Use(cipherBlockAccessMiddleware(cb))
+
+	req := httptest.NewRequest(echo.GET, "/", nil)
+	rec := httptest.NewRecorder()
+	e.NewContext(req, rec)
+	e.ServeHTTP(rec, req)
+
+	c := e.AcquireContext()
+
+	pcb, ok := c.Get(cbMiddlewareKey).(cipher.Block)
+
+	if !ok {
+		t.Fatalf("CB Middleware was registered but when accessing the cipher block, it was not provided")
+
+	}
+
+	if cb != pcb {
+		t.Fatalf("Provided cipher block in middleware is different than the one provided to the middleware")
 	}
 
 }
