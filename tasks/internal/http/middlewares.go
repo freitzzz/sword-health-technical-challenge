@@ -63,6 +63,8 @@ func TranslateHeadersInUserContextMiddleware() echo.MiddlewareFunc {
 
 			if perr != nil || (role < 0 || role > 1) {
 				logging.LogWarning(fmt.Sprintf("Received request with invalid role =:> %d", role))
+
+				return NotAuthorized(c)
 			}
 
 			uc := UserContext{ID: uid, Role: role}
