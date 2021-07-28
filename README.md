@@ -149,6 +149,18 @@ Delete Task
 curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks/:id' -i
 ```
 
+Get Notifications
+
+```
+curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost/notifications' -i
+```
+
+Read Notification
+
+```
+curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost/notifications/:id' -i
+```
+
 
 ## Conventions
 
