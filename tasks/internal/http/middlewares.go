@@ -18,11 +18,12 @@ const (
 	ucMiddlewareKey = "uc"
 )
 
-func RegisterMiddlewares(e *echo.Echo, db *gorm.DB) {
+func RegisterMiddlewares(e *echo.Echo, db *gorm.DB, cb cipher.Block) {
 
 	e.Use(dbAccessMiddleware(db))
 	e.Use(resourceIdentifierValidationMiddleware())
 	e.Use(translateHeadersInUserContextMiddleware())
+	e.Use(cipherBlockAccessMiddleware(cb))
 
 }
 
