@@ -114,6 +114,7 @@ Golang version: `1.16`
 Major pain points, less proficient, etc...
 Things to improve
 Encryption a little bit ugly
+External vs Internal identifiers
 
 ## Testing
 
