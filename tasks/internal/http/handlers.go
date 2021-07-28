@@ -49,7 +49,19 @@ func PerformTask(c echo.Context) error {
 
 func GetTask(c echo.Context) error {
 
-	return c.String(http.StatusOK, "")
+	db, uc, tid, err := requestEssentialsWithTaskID(c)
+
+	if err != nil {
+		return err
+	}
+
+	task, qerr := getTaskFromDb(c, db, uc, tid)
+
+	if qerr != nil {
+		return qerr
+	}
+
+	return Ok(c, ToTaskView(*task))
 
 }
 
