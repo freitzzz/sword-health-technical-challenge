@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"crypto/cipher"
 	"errors"
 	"strings"
 
@@ -14,7 +15,7 @@ type Task struct {
 	gorm.Model
 }
 
-func New(uid string, summary string) (Task, error) {
+func New(uid string, summary string, block cipher.Block) (Task, error) {
 
 	trimSummary, err := trimAndCheckIfSummaryStringExceeds2500Characters(summary)
 
@@ -23,7 +24,7 @@ func New(uid string, summary string) (Task, error) {
 	if err == nil {
 		task = Task{
 			UserID:   uid,
-			Summary:  trimSummary,
+			Summary:  encryptSummary(block, trimSummary),
 			Disabled: false,
 		}
 	}
@@ -35,15 +36,19 @@ func Disable(task *Task) {
 	task.Disabled = true
 }
 
-func UpdateSummary(task *Task, summary string) error {
+func UpdateSummary(task *Task, summary string, block cipher.Block) error {
 
 	trimSummary, err := trimAndCheckIfSummaryStringExceeds2500Characters(summary)
 
 	if err == nil {
-		task.Summary = trimSummary
+		task.Summary = encryptSummary(block, trimSummary)
 	}
 
 	return err
+}
+
+func Summary(task Task, block cipher.Block) string {
+	return decryptSummary(block, task.Summary)
 }
 
 func trimAndCheckIfSummaryStringExceeds2500Characters(summary string) (string, error) {
