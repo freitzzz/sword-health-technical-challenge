@@ -116,6 +116,7 @@ Things to improve
 Encryption a little bit ugly
 External vs Internal identifiers
 Duplicated Code
+Tests, mocking
 
 ## Testing
 
