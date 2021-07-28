@@ -9,13 +9,13 @@ externalDocs:
   description: SWORD Health technical challenge
   url: https://github.com/freitzzz/sword-health-technical-challenge
 tags:
-- name: tasks
-  description: Perform actions on tasks
+  - name: tasks
+    description: Perform actions on tasks
 paths:
   /tasks:
     get:
       tags:
-      - tasks
+        - tasks
       summary: Paginated list of tasks
       operationId: getTasks
       parameters:
@@ -27,27 +27,31 @@ paths:
       responses:
         200:
           description: Up to 20 tasks retrieved
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskPage'
+                $ref: "#/components/schemas/TaskPage"
         400:
           description: Input is not valid
           content:
             application/json:
               schema:
-                anyOf: [
-                  $ref: '#/components/schemas/InvalidParam'
-                ]
+                anyOf: [$ref: "#/components/schemas/InvalidParam"]
         401:
           description: Invalid authorization access
       security:
-      - auth:
-        - write:tasks
-        - read:tasks
+        - auth:
+            - write:tasks
+            - read:tasks
+        - userid:
+            - write:tasks
+            - read:tasks
+        - userrole:
+            - write:tasks
+            - read:tasks
     post:
       tags:
-      - tasks
+        - tasks
       summary: Perform task
       operationId: postTasks
       requestBody:
@@ -55,30 +59,36 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskPerform'
+              $ref: "#/components/schemas/TaskPerform"
         required: true
       responses:
         201:
           description: Task created
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: "#/components/schemas/Task"
         400:
           description: Summary reached maximum of 2500 characters
         401:
           description: Invalid authorization access
       security:
-      - auth:
-        - write:tasks
-        - read:tasks
+        - auth:
+            - write:tasks
+            - read:tasks
+        - userid:
+            - write:tasks
+            - read:tasks
+        - userrole:
+            - write:tasks
+            - read:tasks
   /tasks/{id}:
     get:
       tags:
-      - tasks
+        - tasks
       summary: Detailed information of task
       operationId: getTask
-      parameters: 
+      parameters:
         - in: path
           name: id
           schema:
@@ -88,21 +98,27 @@ paths:
       responses:
         200:
           description: Task retrieved
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: "#/components/schemas/Task"
         401:
           description: Invalid authorization access
         404:
           description: Task not found
       security:
-      - auth:
-        - write:tasks
-        - read:tasks
+        - auth:
+            - write:tasks
+            - read:tasks
+        - userid:
+            - write:tasks
+            - read:tasks
+        - userrole:
+            - write:tasks
+            - read:tasks
     put:
       tags:
-      - tasks
+        - tasks
       summary: Update an existing task
       operationId: updateTask
       requestBody:
@@ -110,9 +126,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskUpdate'
+              $ref: "#/components/schemas/TaskUpdate"
         required: true
-      parameters: 
+      parameters:
         - in: path
           name: id
           schema:
@@ -122,10 +138,10 @@ paths:
       responses:
         200:
           description: Task updated
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: "#/components/schemas/Task"
         400:
           description: Summary reached maximum of 2500 characters
         401:
@@ -133,15 +149,21 @@ paths:
         404:
           description: Task not found
       security:
-      - auth:
-        - write:tasks
-        - read:tasks
+        - auth:
+            - write:tasks
+            - read:tasks
+        - userid:
+            - write:tasks
+            - read:tasks
+        - userrole:
+            - write:tasks
+            - read:tasks
     delete:
       tags:
-      - tasks
+        - tasks
       summary: Delete task
       operationId: deleteTask
-      parameters: 
+      parameters:
         - in: path
           name: id
           schema:
@@ -156,15 +178,21 @@ paths:
         404:
           description: Task not found
       security:
-      - auth:
-        - write:tasks
-        - read:tasks
+        - auth:
+            - write:tasks
+            - read:tasks
+        - userid:
+            - write:tasks
+            - read:tasks
+        - userrole:
+            - write:tasks
+            - read:tasks
 components:
   schemas:
     TaskPage:
       type: array
       items:
-        $ref: '#/components/schemas/TaskFraction'
+        $ref: "#/components/schemas/TaskFraction"
     Task:
       required:
         - id
@@ -189,8 +217,8 @@ components:
           format: int64
     TaskFraction:
       required:
-      - id
-      - userId
+        - id
+        - userId
       type: object
       properties:
         id:
@@ -200,7 +228,7 @@ components:
           description: External ID of the user that performed the task
     TaskPerform:
       required:
-      - summary
+        - summary
       type: object
       properties:
         summary:
@@ -208,7 +236,7 @@ components:
           maxLength: 2500
     TaskUpdate:
       required:
-      - summary
+        - summary
       type: object
       properties:
         summary:
@@ -221,7 +249,7 @@ components:
         - name
       type: object
       properties:
-        message: 
+        message:
           type: string
           description: Detailed message on why the parameter is in an invalid state
         type:
@@ -236,3 +264,11 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    userid:
+      type: apiKey
+      in: header
+      name: X-User-ID
+    userrole:
+      type: apiKey
+      in: header
+      name: X-User-Role
