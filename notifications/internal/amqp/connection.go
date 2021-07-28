@@ -1,4 +1,4 @@
-package data
+package amqp
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ var (
 	rabbitMQAddress  = os.Getenv(rabbitMQAddressEnvKey)
 )
 
-func OpenDbConnection() (*amqp.Connection, error) {
+func OpenMQConnection() (*amqp.Connection, error) {
 
 	return amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s/", rabbitMQUsername, rabbitMQPassword, rabbitMQAddress))
 }

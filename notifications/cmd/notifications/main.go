@@ -1,6 +1,7 @@
 package main
 
 import (
+	aqp "github.com/freitzzz/sword-health-technical-challenge/notifications/internal/amqp"
 	"github.com/freitzzz/sword-health-technical-challenge/notifications/internal/data"
 	"github.com/freitzzz/sword-health-technical-challenge/notifications/internal/http"
 	"github.com/freitzzz/sword-health-technical-challenge/notifications/internal/logging"
@@ -23,6 +24,20 @@ func main() {
 
 		panic("DB connection is required to serve HTTP calls")
 	}
+
+	mqc, merr := aqp.OpenMQConnection()
+
+	defer mqc.Close()
+
+	if merr != nil {
+
+		logging.LogError("Could not open AMQP connection on server start")
+		logging.LogError(merr.Error())
+
+		panic("AMQP connection is required to consume notification messages")
+	}
+
+	aqp.RegisterHandlers(mqc, db)
 
 	http.RegisterMiddlewares(e, db)
 
