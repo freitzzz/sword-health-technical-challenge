@@ -47,11 +47,32 @@ func GetTasks(c echo.Context) error {
 
 func PerformTask(c echo.Context) error {
 
+	db, uc, rerr := requestEssentials(c)
+
+	if rerr != nil {
+		return rerr
+	}
+
 	var tp TaskPerform
 
 	c.Bind(&tp)
 
-	return c.String(http.StatusOK, "")
+	task, nerr := domain.New(uc.ID, tp.Summary)
+
+	if nerr != nil {
+		return InvalidParamBadRequest(c, summaryExceeds2500Characters)
+	}
+
+	_, ierr := data.InsertTask(db, task)
+
+	if ierr != nil {
+		logging.LogError("Failed to insert task on database after creating it")
+		logging.LogError(ierr.Error())
+
+		return InternalServerError(c)
+	}
+
+	return Created(c, ToTaskView(task))
 
 }
 

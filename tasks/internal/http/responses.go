@@ -93,3 +93,7 @@ func NoContent(c echo.Context) error {
 func Ok(c echo.Context, body interface{}) error {
 	return c.JSON(http.StatusOK, body)
 }
+
+func Created(c echo.Context, body interface{}) error {
+	return c.JSON(http.StatusCreated, body)
+}
