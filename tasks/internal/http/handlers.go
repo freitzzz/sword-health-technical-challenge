@@ -86,7 +86,7 @@ func UpdateTask(c echo.Context) error {
 		return InternalServerError(c)
 	}
 
-	return NoContent(c)
+	return Ok(c, ToTaskView(*task))
 
 }
 
