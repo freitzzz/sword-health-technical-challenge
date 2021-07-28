@@ -4,6 +4,7 @@ import "strconv"
 
 const (
 	paginationIndex = "index"
+	summaryField    = "summary"
 	taskId          = "id"
 	userIdHeader    = "X-User-ID"
 	roleHeader      = "X-User-Role"

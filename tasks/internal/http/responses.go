@@ -18,6 +18,12 @@ var (
 		Type:    "Query",
 		Name:    paginationIndex,
 	}
+
+	summaryExceeds2500Characters = InvalidParam{
+		Message: "Sumamry exceeds 2500 characters",
+		Type:    "Body",
+		Name:    summaryField,
+	}
 )
 
 func InvalidParamBadRequest(c echo.Context, ip InvalidParam) error {
