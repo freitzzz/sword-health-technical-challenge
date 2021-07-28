@@ -13,11 +13,14 @@ import (
 )
 
 func RegisterHandlers(e *echo.Echo) {
+
+	technicianMiddleware := onlyAllowTechnicianMiddleware()
+
 	e.GET(getTasks, GetTasks)
-	e.POST(performTask, PerformTask)
+	e.POST(performTask, PerformTask, technicianMiddleware)
 	e.GET(getTask, GetTask)
-	e.GET(updateTask, UpdateTask)
-	e.GET(deleteTask, DeleteTask)
+	e.PUT(updateTask, UpdateTask, technicianMiddleware)
+	e.DELETE(deleteTask, DeleteTask)
 
 	echo.NotFoundHandler = useNotFoundHandler()
 }
@@ -52,9 +55,38 @@ func GetTask(c echo.Context) error {
 
 func UpdateTask(c echo.Context) error {
 
-	tid := c.Param(taskId)
+	db, uc, tid, err := requestEssentialsWithTaskID(c)
 
-	return c.String(http.StatusOK, tid)
+	if err != nil {
+		return err
+	}
+
+	task, qerr := getTaskFromDb(c, db, uc, tid)
+
+	if qerr != nil {
+		return qerr
+	}
+
+	var tu TaskUpdate
+
+	c.Bind(&tu)
+
+	userr := domain.UpdateSummary(task, tu.Summary)
+
+	if userr != nil {
+		return InvalidParamBadRequest(c, summaryExceeds2500Characters)
+	}
+
+	_, uerr := data.UpdateTask(db, *task)
+
+	if uerr != nil {
+		logging.LogError("Failed to update task on database after updating summary")
+		logging.LogError(uerr.Error())
+
+		return InternalServerError(c)
+	}
+
+	return NoContent(c)
 
 }
 
@@ -77,7 +109,7 @@ func DeleteTask(c echo.Context) error {
 	_, uerr := data.UpdateTask(db, *task)
 
 	if uerr != nil {
-		logging.LogError("Failed to update task after disabling it")
+		logging.LogError("Failed to update task on database after disabling it")
 		logging.LogError(uerr.Error())
 
 		return InternalServerError(c)
