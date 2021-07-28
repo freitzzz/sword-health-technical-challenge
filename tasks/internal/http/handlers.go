@@ -1,6 +1,7 @@
 package http
 
 import (
+	"crypto/cipher"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -33,7 +34,7 @@ func GetTasks(c echo.Context) error {
 		return InvalidParamBadRequest(c, paginationIndexNotInteger)
 	}
 
-	db, uc, rerr := requestEssentials(c)
+	db, uc, _, rerr := requestEssentials(c)
 
 	if rerr != nil {
 		return rerr
@@ -47,7 +48,7 @@ func GetTasks(c echo.Context) error {
 
 func PerformTask(c echo.Context) error {
 
-	db, uc, rerr := requestEssentials(c)
+	db, uc, cb, rerr := requestEssentials(c)
 
 	if rerr != nil {
 		return rerr
@@ -57,7 +58,7 @@ func PerformTask(c echo.Context) error {
 
 	c.Bind(&tp)
 
-	task, nerr := domain.New(uc.ID, tp.Summary)
+	task, nerr := domain.New(uc.ID, tp.Summary, cb)
 
 	if nerr != nil {
 		return InvalidParamBadRequest(c, summaryExceeds2500Characters)
@@ -72,13 +73,13 @@ func PerformTask(c echo.Context) error {
 		return InternalServerError(c)
 	}
 
-	return Created(c, ToTaskView(task))
+	return Created(c, ToTaskView(task, cb))
 
 }
 
 func GetTask(c echo.Context) error {
 
-	db, uc, tid, rerr := requestEssentialsWithTaskID(c)
+	db, uc, cb, tid, rerr := requestEssentialsWithTaskID(c)
 
 	if rerr != nil {
 		return rerr
@@ -90,13 +91,13 @@ func GetTask(c echo.Context) error {
 		return qerr
 	}
 
-	return Ok(c, ToTaskView(*task))
+	return Ok(c, ToTaskView(*task, cb))
 
 }
 
 func UpdateTask(c echo.Context) error {
 
-	db, uc, tid, rerr := requestEssentialsWithTaskID(c)
+	db, uc, cb, tid, rerr := requestEssentialsWithTaskID(c)
 
 	if rerr != nil {
 		return rerr
@@ -112,7 +113,7 @@ func UpdateTask(c echo.Context) error {
 
 	c.Bind(&tu)
 
-	userr := domain.UpdateSummary(task, tu.Summary)
+	userr := domain.UpdateSummary(task, tu.Summary, cb)
 
 	if userr != nil {
 		return InvalidParamBadRequest(c, summaryExceeds2500Characters)
@@ -127,13 +128,13 @@ func UpdateTask(c echo.Context) error {
 		return InternalServerError(c)
 	}
 
-	return Ok(c, ToTaskView(*task))
+	return Ok(c, ToTaskView(*task, cb))
 
 }
 
 func DeleteTask(c echo.Context) error {
 
-	db, uc, tid, rerr := requestEssentialsWithTaskID(c)
+	db, uc, _, tid, rerr := requestEssentialsWithTaskID(c)
 
 	if rerr != nil {
 		return rerr
@@ -166,45 +167,52 @@ func useNotFoundHandler() func(c echo.Context) error {
 	}
 }
 
-func requestEssentials(c echo.Context) (*gorm.DB, UserContext, error) {
+func requestEssentials(c echo.Context) (*gorm.DB, UserContext, cipher.Block, error) {
 
 	db, dok := c.Get(dbMiddlewareKey).(*gorm.DB)
 	uc, uok := c.Get(ucMiddlewareKey).(UserContext)
+	cb, cok := c.Get(cbMiddlewareKey).(cipher.Block)
 
 	if !dok {
-		logging.LogError("DB not available in DeleteTask middleware")
+		logging.LogError("DB not available in middleware")
 
-		return db, uc, InternalServerError(c)
+		return db, uc, cb, InternalServerError(c)
 	}
 
 	if !uok {
-		logging.LogError("User Context not available in DeleteTask middleware")
+		logging.LogError("User Context not available in middleware")
 
-		return db, uc, InternalServerError(c)
+		return db, uc, cb, InternalServerError(c)
 	}
 
-	return db, uc, nil
+	if !cok {
+		logging.LogError("Cipher Block not available in middleware")
+
+		return db, uc, cb, InternalServerError(c)
+	}
+
+	return db, uc, cb, nil
 
 }
 
-func requestEssentialsWithTaskID(c echo.Context) (*gorm.DB, UserContext, int, error) {
+func requestEssentialsWithTaskID(c echo.Context) (*gorm.DB, UserContext, cipher.Block, int, error) {
 
 	tid, terr := strconv.Atoi(c.Param(taskId))
 
-	db, uc, rerr := requestEssentials(c)
+	db, uc, cb, rerr := requestEssentials(c)
 
 	if rerr != nil {
-		return db, uc, tid, rerr
+		return db, uc, cb, tid, rerr
 	} else if terr != nil {
 		logging.LogError("Task ID parse not successful, middlware allowed it in the first place")
 		logging.LogError(terr.Error())
 
 		InternalServerError(c)
 
-		return db, uc, tid, terr
+		return db, uc, cb, tid, terr
 	}
 
-	return db, uc, tid, nil
+	return db, uc, cb, tid, nil
 
 }
 

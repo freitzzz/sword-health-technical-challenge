@@ -1,6 +1,7 @@
 package http
 
 import (
+	"crypto/cipher"
 	"net/http"
 
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/domain"
@@ -42,11 +43,12 @@ var (
 	}
 )
 
-func ToTaskView(task domain.Task) TaskView {
+func ToTaskView(task domain.Task, block cipher.Block) TaskView {
+
 	return TaskView{
 		ID:                 task.ID,
 		UserID:             task.UserID,
-		Summary:            task.Summary,
+		Summary:            domain.Summary(task, block),
 		CreatedTimestampMS: task.CreatedAt.Unix(),
 		UpdatedTimestampMS: task.UpdatedAt.Unix(),
 	}
