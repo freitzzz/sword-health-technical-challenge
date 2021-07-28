@@ -17,6 +17,6 @@ export mysql_database=mysql
 
 # RabbitMQ
 
-export rabbitmq_user=root
-export rabbitmq_pass=dev
+export rabbitmq_user=guest
+export rabbitmq_pass=guest
 export rabbitmq_address=127.0.0.1:5672
