@@ -24,6 +24,7 @@ func RegisterMiddlewares(e *echo.Echo, db *gorm.DB, cb cipher.Block) {
 	e.Use(resourceIdentifierValidationMiddleware())
 	e.Use(translateHeadersInUserContextMiddleware())
 	e.Use(cipherBlockAccessMiddleware(cb))
+	e.Use(loggingMiddleware())
 
 }
 
@@ -114,6 +115,21 @@ func onlyAllowTechnicianMiddleware() echo.MiddlewareFunc {
 			if !IsTechnician(uc) {
 				return NotAuthorized(c)
 			}
+
+			next(c)
+
+			return nil
+		}
+	}
+}
+
+func loggingMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+
+			req := c.Request()
+
+			logging.LogInfo(fmt.Sprintf("Host: %s | Method: %s | Path: %s", req.Host, req.Method, req.URL.RequestURI()))
 
 			next(c)
 
