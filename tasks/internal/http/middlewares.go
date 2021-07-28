@@ -20,6 +20,7 @@ func RegisterMiddlewares(e *echo.Echo, db *gorm.DB) {
 
 	e.Use(dbAccessMiddleware(db))
 	e.Use(resourceIdentifierValidationMiddleware())
+	e.Use(translateHeadersInUserContextMiddleware())
 
 }
 
