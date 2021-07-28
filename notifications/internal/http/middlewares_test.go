@@ -57,35 +57,6 @@ func TestOnlyAllowManagerAccessMiddlewareReturnsInternalServerErrorIfUserContext
 func TestOnlyAllowManagerAccessMiddlewareReturnsUnauthorizedIfIsTechnicianCallReturnsFalse(t *testing.T) {
 	e := echo.New()
 
-	uc := UserContext{ID: "x", Role: 1}
-
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-
-			c.Set(ucMiddlewareKey, uc)
-			next(c)
-
-			return nil
-		}
-	})
-
-	e.Use(onlyAllowManagerMiddleware())
-
-	req := httptest.NewRequest(echo.GET, "/", nil)
-	rec := httptest.NewRecorder()
-	e.NewContext(req, rec)
-	e.ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusUnauthorized {
-		t.Fatalf("User Context is present, but user is not technician, so it should respond with unauthorized, but replied %d instead", rec.Code)
-
-	}
-
-}
-
-func TestOnlyAllowManagerAccessMiddlewareProceedsMiddlewareIfIsTechnicianCallReturnsTrue(t *testing.T) {
-	e := echo.New()
-
 	uc := UserContext{ID: "x", Role: 0}
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -105,8 +76,37 @@ func TestOnlyAllowManagerAccessMiddlewareProceedsMiddlewareIfIsTechnicianCallRet
 	e.NewContext(req, rec)
 	e.ServeHTTP(rec, req)
 
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("User Context is present, but user is technician, so it should respond with unauthorized, but replied %d instead", rec.Code)
+
+	}
+
+}
+
+func TestOnlyAllowManagerAccessMiddlewareProceedsMiddlewareIfIsTechnicianCallReturnsTrue(t *testing.T) {
+	e := echo.New()
+
+	uc := UserContext{ID: "x", Role: 1}
+
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+
+			c.Set(ucMiddlewareKey, uc)
+			next(c)
+
+			return nil
+		}
+	})
+
+	e.Use(onlyAllowManagerMiddleware())
+
+	req := httptest.NewRequest(echo.GET, "/", nil)
+	rec := httptest.NewRecorder()
+	e.NewContext(req, rec)
+	e.ServeHTTP(rec, req)
+
 	if rec.Code != http.StatusOK {
-		t.Fatalf("User Context is present, user is technician, so it should respond with ok, but replied %d instead", rec.Code)
+		t.Fatalf("User Context is present, user is not technician, so it should respond with ok, but replied %d instead", rec.Code)
 
 	}
 
