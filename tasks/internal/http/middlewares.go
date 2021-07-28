@@ -59,7 +59,15 @@ func translateHeadersInUserContextMiddleware() echo.MiddlewareFunc {
 
 			uid := headers.Get(userIdHeader)
 
-			role, perr := strconv.Atoi(headers.Get(userIdHeader))
+			if len(uid) == 0 {
+
+				logging.LogWarning("Received request with empty user id")
+
+				return NotAuthorized(c)
+
+			}
+
+			role, perr := strconv.Atoi(headers.Get(roleHeader))
 
 			if perr != nil || (role < 0 || role > 1) {
 				logging.LogWarning(fmt.Sprintf("Received request with invalid role =:> %d", role))
