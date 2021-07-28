@@ -6,7 +6,7 @@ import (
 
 func TestPaginationIndexToOffsetMultipliesIndexByQueryLimit(t *testing.T) {
 	pidx := 2
-	expectedOffset := pidx * _queryResultsLimit
+	expectedOffset := pidx * queryResultsLimit
 
 	offset := PaginationIndexToOffset(pidx)
 

@@ -7,7 +7,11 @@ import (
 )
 
 const (
-	_queryResultsLimit = 20
+	queryResultsLimit = 20
+)
+
+var (
+	disabledQueryMap = map[string]interface{}{"disabled": false}
 )
 
 func QueryUserTasks(db *gorm.DB, uid string, pidx int) []*domain.Task {
@@ -16,7 +20,7 @@ func QueryUserTasks(db *gorm.DB, uid string, pidx int) []*domain.Task {
 
 	offset := PaginationIndexToOffset(pidx)
 
-	db.Limit(_queryResultsLimit).Offset(offset).Where(&domain.Task{UserID: uid, Disabled: false}).Find(&tasks)
+	db.Limit(queryResultsLimit).Offset(offset).Where(&domain.Task{UserID: uid}, "disabled").Find(&tasks)
 
 	return tasks
 
@@ -28,7 +32,7 @@ func QueryTasks(db *gorm.DB, pidx int) []*domain.Task {
 
 	offset := PaginationIndexToOffset(pidx)
 
-	db.Limit(_queryResultsLimit).Offset(offset).Where(&domain.Task{Disabled: false}).Find(&tasks)
+	db.Limit(queryResultsLimit).Offset(offset).Where(disabledQueryMap).Find(&tasks)
 
 	return tasks
 
@@ -48,7 +52,7 @@ func QueryTaskById(db *gorm.DB, tid int) (*domain.Task, error) {
 
 	var task domain.Task
 
-	result := db.First(&task, tid)
+	result := db.Where(disabledQueryMap).First(&task, tid, "disabled = ?", "false")
 
 	return &task, result.Error
 
@@ -58,7 +62,7 @@ func QueryUserTaskById(db *gorm.DB, uid string, tid int) (*domain.Task, error) {
 
 	var task domain.Task
 
-	result := db.Where(&domain.Task{UserID: uid}).First(&task, tid)
+	result := db.Where(&domain.Task{UserID: uid}, "disabled").First(&task, tid)
 
 	return &task, result.Error
 
@@ -73,5 +77,5 @@ func UpdateTask(db *gorm.DB, task domain.Task) (*domain.Task, error) {
 }
 
 func PaginationIndexToOffset(pidx int) int {
-	return _queryResultsLimit * pidx
+	return queryResultsLimit * pidx
 }
