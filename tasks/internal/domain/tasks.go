@@ -16,15 +16,11 @@ type Task struct {
 
 func New(uid string, summary string) (Task, error) {
 
-	trimSummary := strings.TrimSpace(summary)
+	trimSummary, err := trimAndCheckIfSummaryStringExceeds2500Characters(summary)
 
 	var task Task
 
-	var err error
-
-	if len(trimSummary) > 2500 {
-		err = errors.New("task summary exceeds 2500 characters")
-	} else {
+	if err == nil {
 		task = Task{
 			UserID:   uid,
 			Summary:  trimSummary,
@@ -37,4 +33,25 @@ func New(uid string, summary string) (Task, error) {
 
 func Disable(task *Task) {
 	task.Disabled = true
+}
+
+func UpdateSummary(task *Task, summary string) error {
+
+	trimSummary, err := trimAndCheckIfSummaryStringExceeds2500Characters(summary)
+
+	if err == nil {
+		task.Summary = trimSummary
+	}
+
+	return err
+}
+
+func trimAndCheckIfSummaryStringExceeds2500Characters(summary string) (string, error) {
+	trimSummary := strings.TrimSpace(summary)
+
+	if len(trimSummary) > 2500 {
+		return trimSummary, errors.New("task summary exceeds 2500 characters")
+	} else {
+		return trimSummary, nil
+	}
 }
