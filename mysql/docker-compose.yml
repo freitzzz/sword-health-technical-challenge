@@ -1,0 +1,20 @@
+# Adapted from: https://medium.com/@chrischuck35/how-to-create-a-mysql-instance-with-docker-compose-1598f3cc1bee
+
+version: 2
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'root'
+      MYSQL_USER: 'prod'
+      MYSQL_PASSWORD: 'prod'
+      MYSQL_ROOT_PASSWORD: 'prod'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+volumes:
+  my-db:
