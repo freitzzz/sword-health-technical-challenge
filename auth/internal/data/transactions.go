@@ -3,79 +3,41 @@ package data
 import (
 	"gorm.io/gorm"
 
-	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/domain"
+	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/domain"
 )
 
-const (
-	queryResultsLimit = 20
-)
+func InsertUser(db *gorm.DB, u domain.User) (*domain.User, error) {
 
-var (
-	disabledQueryMap = map[string]interface{}{"disabled": false}
-)
+	result := db.Create(&u)
 
-func QueryUserTasks(db *gorm.DB, uid string, pidx int) []*domain.Task {
-
-	var tasks []*domain.Task
-
-	offset := PaginationIndexToOffset(pidx)
-
-	db.Limit(queryResultsLimit).Offset(offset).Where(&domain.Task{UserID: uid}, "disabled").Find(&tasks)
-
-	return tasks
+	return &u, result.Error
 
 }
 
-func QueryTasks(db *gorm.DB, pidx int) []*domain.Task {
+func InsertUserSession(db *gorm.DB, us domain.UserSession) (*domain.UserSession, error) {
 
-	var tasks []*domain.Task
+	result := db.Create(&us)
 
-	offset := PaginationIndexToOffset(pidx)
-
-	db.Limit(queryResultsLimit).Offset(offset).Where(disabledQueryMap).Find(&tasks)
-
-	return tasks
+	return &us, result.Error
 
 }
 
-func InsertTask(db *gorm.DB, task domain.Task) (*domain.Task, error) {
+func QueryUserByIdentifier(db *gorm.DB, uid string) (*domain.User, error) {
 
-	result := db.Create(&task)
+	var u domain.User
 
-	return &task, result.Error
+	result := db.First(&u, &domain.User{Identifier: uid})
 
-}
-
-// todo: remove "external" identification, use internal only. Justify no time for external
-
-func QueryTaskById(db *gorm.DB, tid int) (*domain.Task, error) {
-
-	var task domain.Task
-
-	result := db.Where(disabledQueryMap).First(&task, tid, "disabled = ?", "false")
-
-	return &task, result.Error
+	return &u, result.Error
 
 }
 
-func QueryUserTaskById(db *gorm.DB, uid string, tid int) (*domain.Task, error) {
+func QueryUserSessionByToken(db *gorm.DB, tk string) (*domain.UserSession, error) {
 
-	var task domain.Task
+	var us domain.UserSession
 
-	result := db.Where(&domain.Task{UserID: uid}, "disabled").First(&task, tid)
+	result := db.First(&us, &domain.UserSession{Token: tk})
 
-	return &task, result.Error
+	return &us, result.Error
 
-}
-
-func UpdateTask(db *gorm.DB, task domain.Task) (*domain.Task, error) {
-
-	result := db.Save(&task)
-
-	return &task, result.Error
-
-}
-
-func PaginationIndexToOffset(pidx int) int {
-	return queryResultsLimit * pidx
 }
