@@ -1,6 +1,7 @@
 package main
 
 import (
+	aqp "github.com/freitzzz/sword-health-technical-challenge/tasks/internal/amqp"
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/data"
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/domain"
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/http"
@@ -36,7 +37,29 @@ func main() {
 
 	}
 
-	http.RegisterMiddlewares(e, db, cb)
+	mqc, merr := aqp.OpenMQConnection()
+
+	defer mqc.Close()
+
+	if merr != nil {
+
+		logging.LogError("Could not open AMQP connection on server start")
+		logging.LogError(merr.Error())
+
+		panic("AMQP connection is required to consume notification messages")
+	}
+
+	mb, serr := aqp.SetupMailBox(mqc)
+
+	if serr != nil {
+
+		logging.LogError("Could not setup mail box")
+		logging.LogError(serr.Error())
+
+		panic("Mail Box is required to provide channel and queue in middleware")
+	}
+
+	http.RegisterMiddlewares(e, db, cb, mb)
 
 	http.RegisterHandlers(e)
 
