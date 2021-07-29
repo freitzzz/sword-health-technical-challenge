@@ -105,6 +105,8 @@ Regarding notifications messaging API, AMQP is being to command the publish of t
 
 After receiving the notification message, notifications service stores it on a database, so that it can later be read by the managers. Once the notification has been read, a record in the database is stored indicating that the manager read the notificatiom, removing it from his mailbox.
 
+-----
+
 ![components_diagram](docs/assets/sword_health_technical_challenge_components_diagram.png)
 
 <center><i>Figure 4 - Diagram illustrating solution components, their interfaces and communication (Tool: draw.io)</i></center>
