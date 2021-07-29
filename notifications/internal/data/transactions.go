@@ -1,20 +1,24 @@
 package data
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 
 	"github.com/freitzzz/sword-health-technical-challenge/notifications/internal/domain"
-)
-
-var (
-	readQueryMap = map[string]interface{}{"read": false}
 )
 
 func QueryUserNotifications(db *gorm.DB, uid string) []*domain.Notification {
 
 	var notifications []*domain.Notification
 
-	db.Where(&domain.Notification{UserID: uid}, "read").Find(&notifications)
+	var notificationsReadIds []uint
+
+	nrq := &domain.NotificationRead{UserID: uid}
+
+	db.Model(&nrq).Where(&nrq).Select("notification_id").Find(&notificationsReadIds)
+
+	db.Not(notificationsReadIds).Find(&notifications)
 
 	return notifications
 
@@ -28,19 +32,29 @@ func InsertNotification(db *gorm.DB, notification domain.Notification) (*domain.
 
 }
 
-func QueryUserNotificationById(db *gorm.DB, uid string, tid int) (*domain.Notification, error) {
+func InsertNotificationRead(db *gorm.DB, notificationRead domain.NotificationRead) (*domain.NotificationRead, error) {
 
-	var notification domain.Notification
+	result := db.Create(&notificationRead)
 
-	result := db.Where(&domain.Notification{UserID: uid}, "disabled").First(&notification, tid)
-
-	return &notification, result.Error
+	return &notificationRead, result.Error
 
 }
 
-func UpdateNotification(db *gorm.DB, notification domain.Notification) (*domain.Notification, error) {
+func QueryUserNotificationById(db *gorm.DB, uid string, nid uint) (*domain.Notification, error) {
 
-	result := db.Save(&notification)
+	var notification domain.Notification
+
+	var notificationsReadIds []uint
+
+	nrq := &domain.NotificationRead{UserID: uid, NotificationID: nid}
+
+	db.Model(&nrq).Where(&nrq).Select("id").Find(&notificationsReadIds)
+
+	if len(notificationsReadIds) != 0 {
+		return nil, errors.New("User has already marked notification as read")
+	}
+
+	result := db.First(&notification, nid)
 
 	return &notification, result.Error
 
