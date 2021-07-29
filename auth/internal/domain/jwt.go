@@ -37,7 +37,7 @@ func SignUserSession(b JWTBundle, u User, exp int64) (string, error) {
 		jwt.GetSigningMethod(b.Alg),
 		jwt.MapClaims{
 			"uid":       u.Identifier,
-			"secret":    u.Secret,
+			"role":      u.Role,
 			"expiresAt": exp,
 		},
 	).SignedString(key)
