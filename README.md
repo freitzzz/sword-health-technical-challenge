@@ -105,6 +105,12 @@ Regarding notifications messaging API, AMQP is being to command the publish of t
 
 After receiving the notification message, notifications service stores it on a database, so that it can later be read by the managers. Once the notification has been read, a record in the database is stored indicating that the manager read the notificatiom, removing it from his mailbox.
 
+![components_diagram](docs/assets/sword_health_technical_challenge_components_diagram.png)
+
+<center><i>Figure 4 - Diagram illustrating solution components, their interfaces and communication (Tool: draw.io)</i></center>
+
+Figure 4 describes on a coarse view the interactions between the components of the system: the microservices, their databases, the API gateway, the RabbitMQ server and the manager & technician. Each of these components are deployed with Docker and scaled with Kubernetes.
+
 -----
 
 For developing the system, I've selected the following libraries and tools:
