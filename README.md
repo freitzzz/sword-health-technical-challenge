@@ -111,12 +111,16 @@ Golang version: `1.16`
 
 ## Outcomes
 
+todo: create table explaining why certain things were not done and reflections in pain points and things to improve
+
 Major pain points, less proficient, etc...
 Things to improve
 Encryption a little bit ugly
 External vs Internal identifiers
 Duplicated Code
 Tests, mocking
+Authorization tokens can be cracked
+Environment variables
 
 ## Testing
 
