@@ -7,6 +7,6 @@ import (
 
 func RunMigration(db *gorm.DB) error {
 
-	return db.AutoMigrate(&domain.Notification{})
+	return db.AutoMigrate(&domain.Notification{}, &domain.NotificationRead{})
 
 }
