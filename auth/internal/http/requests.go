@@ -6,4 +6,3 @@ type UserAuth struct {
 	Identifier string `json:"id"`
 	Secret     string `json:"secret"`
 }
-}
