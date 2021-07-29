@@ -36,7 +36,7 @@ func RegisterHandlers(c *amqp.Connection, db *gorm.DB) {
 
 }
 
-func consumeNotifications(ch amqp.Channel, q amqp.Queue, db *gorm.DB) {
+func consumeNotifications(ch amqp.Channel, q amqp.Queue, db *gorm.DB) chan bool {
 
 	msgs, err := ch.Consume(q.Name, "", true, false, false, false, nil)
 
@@ -50,6 +50,9 @@ func consumeNotifications(ch amqp.Channel, q amqp.Queue, db *gorm.DB) {
 	forever := make(chan bool)
 
 	go func() {
+
+		defer close(forever)
+
 		for d := range msgs {
 
 			logging.LogInfo(fmt.Sprintf("Received message: %s", string(d.Body)))
@@ -71,6 +74,6 @@ func consumeNotifications(ch amqp.Channel, q amqp.Queue, db *gorm.DB) {
 
 	logging.LogInfo("Established notifications channel connection, waiting for messages")
 
-	<-forever
+	return forever
 
 }
