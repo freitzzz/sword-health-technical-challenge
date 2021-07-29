@@ -5,14 +5,15 @@ import (
 )
 
 func TestMarkAsReadCreatesNotificationReadStructWithUserIdAndNotificationId(t *testing.T) {
-	uid := "x"
+	tuid := "x"
+	muid := "y"
 	message := "x"
 
-	notification := New(message)
+	notification := New(message, tuid)
 
-	notificationRead := MarkAsRead(&notification, uid)
+	notificationRead := MarkAsRead(&notification, muid)
 
-	if notificationRead.UserID != uid {
+	if notificationRead.UserID != muid {
 		t.Fatalf("Notification Read user id should be the same as the one marking it as read")
 	}
 

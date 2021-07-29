@@ -60,10 +60,13 @@ func consumeNotifications(ch amqp.Channel, q amqp.Queue, db *gorm.DB) chan bool 
 			if ferr != nil {
 				logging.LogError("Failed to unmarshall notification message JSON")
 			} else {
-				_, ierr := data.InsertNotification(db, domain.New(n.UserID, n.Message))
+				_, ierr := data.InsertNotification(db, domain.New(n.Message, n.UserID))
 
 				if ierr != nil {
 					logging.LogError("Failed to insert notification in database")
+				} else {
+					logging.LogInfo("Inserted notification in database")
+
 				}
 			}
 

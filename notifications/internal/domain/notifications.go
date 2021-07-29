@@ -16,9 +16,10 @@ type NotificationRead struct {
 	gorm.Model
 }
 
-func New(message string) Notification {
+func New(message string, uid string) Notification {
 
 	return Notification{
+		UserID:  uid,
 		Message: message,
 	}
 
