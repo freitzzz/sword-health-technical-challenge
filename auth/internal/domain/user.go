@@ -20,7 +20,7 @@ var (
 )
 
 type User struct {
-	Identifier string
+	Identifier string `gorm:"uniqueIndex"`
 	Secret     string
 	Role       int
 	gorm.Model
