@@ -4,24 +4,16 @@ import (
 	"testing"
 )
 
-func TestMarkAsReadMarksReadPropertyAsTrue(t *testing.T) {
+func TestMarkAsReadCreatesNotificationReadStructWithUserIdAndNotificationId(t *testing.T) {
 	uid := "x"
 	message := "x"
 
-	notification := New(uid, message)
+	notification := New(message)
 
-	readPropBefore := notification.Read
+	notificationRead := MarkAsRead(&notification, uid)
 
-	MarkAsRead(&notification)
-
-	readPropAfter := notification.Read
-
-	if readPropBefore == readPropAfter {
-		t.Fatalf("Read properties before and after should be different")
-	}
-
-	if !readPropAfter {
-		t.Fatalf("MarkAsRead procedure should mark Read property as false, but condition is not met")
+	if notificationRead.UserID != uid {
+		t.Fatalf("Notification Read user id should be the same as the one marking it as read")
 	}
 
 }
