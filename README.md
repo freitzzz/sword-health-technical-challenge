@@ -93,8 +93,17 @@ Heading over to the notifications service, there are two APIs:
 
 Finally, in the authorization service:
 
-- Authenticate (`POST /authenticate`);
-- Check if user is authorized to perform certain actions (`GET /permissions`).
+- Authenticate (`POST /authenticate`).
+
+Regarding microservices RESTless APIs, documentation about them can be found [here](auth/api/swagger.yml), [here](notifications/api/swagger.yml) and [here](tasks/api/swagger.yml), respectively for auth, notifications and tasks services. They have specified using the `OpenAPI 3.0.1` specification, and can be viewed using an Open API interpreter (e.g., [editor.swagger.io](https://editor.swagger.io/)). HTTP Clients ready to interact with the APIs can also be generated from these files.
+
+Regarding notifications messaging API, AMQP is being to command the publish of these in the tasks service and their consumption in the notification service. Diagram bellow provides a summary of it.
+
+![notification_messages_flow_diagram](docs/assets/sword_health_technical_challenge_notifications_messaging_flow_diagram.png)
+
+<center><i>Figure 3 - Diagram illustrating the flow of notification messages between tasks and notifications microservices (Tool: draw.io)</i></center>
+
+After receiving the notification message, notifications service stores it on a database, so that it can later be read by the managers. Once the notification has been read, a record in the database is stored indicating that the manager read the notificatiom, removing it from his mailbox.
 
 -----
 
