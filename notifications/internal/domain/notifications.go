@@ -5,13 +5,13 @@ import (
 )
 
 type Notification struct {
-	UserID  string
-	Message string
+	TechnicianUserID string
+	Message          string
 	gorm.Model
 }
 
 type NotificationRead struct {
-	UserID         string
+	ManagerUserID  string
 	NotificationID uint
 	gorm.Model
 }
@@ -19,15 +19,15 @@ type NotificationRead struct {
 func New(message string, uid string) Notification {
 
 	return Notification{
-		UserID:  uid,
-		Message: message,
+		TechnicianUserID: uid,
+		Message:          message,
 	}
 
 }
 
 func MarkAsRead(notification *Notification, uid string) *NotificationRead {
 	return &NotificationRead{
-		UserID:         uid,
+		ManagerUserID:  uid,
 		NotificationID: notification.ID,
 	}
 }

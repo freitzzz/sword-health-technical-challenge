@@ -14,7 +14,7 @@ func QueryUserNotifications(db *gorm.DB, uid string) []*domain.Notification {
 
 	var notificationsReadIds []uint
 
-	nrq := &domain.NotificationRead{UserID: uid}
+	nrq := &domain.NotificationRead{ManagerUserID: uid}
 
 	db.Model(&nrq).Where(&nrq).Select("notification_id").Find(&notificationsReadIds)
 
@@ -46,7 +46,7 @@ func QueryUserNotificationById(db *gorm.DB, uid string, nid uint) (*domain.Notif
 
 	var notificationsReadIds []uint
 
-	nrq := &domain.NotificationRead{UserID: uid, NotificationID: nid}
+	nrq := &domain.NotificationRead{ManagerUserID: uid, NotificationID: nid}
 
 	db.Model(&nrq).Where(&nrq).Select("id").Find(&notificationsReadIds)
 
