@@ -190,6 +190,91 @@ Authenticate
 curl -XPOST -H  -H -H "Content-type: application/json" -d '{"id":"tech","secret":"sword"}' 'http://localhost:82/authenticate' -i
 ```
 
+## Development
+
+First download module dependencies
+
+```
+go mod download
+```
+
+Then, load development environment variables
+
+```
+source scripts/load_dev_env.sh
+```
+
+Last, run the program main
+
+```
+go run cmd/<service_name>/main.go
+```
+
+These steps apply for all microservices and must be performed inside of each service directory
+
+To run migrations
+
+```
+go run cmd/migrations/main.go
+```
+
+On auth microservice, make sure fake data is inserted to database
+
+```
+go run cmd/gen/main.go
+```
+
+## Deployment
+
+Build Auth Service Container
+
+```
+docker build --tag sword-auth auth -f auth/deployments/Dockerfile
+```
+
+Build Notifications Service Container
+
+```
+docker build --tag sword-notifications notifications -f notifications/deployments/Dockerfile
+```
+
+Build Tasks Service Container
+
+```
+docker build --tag sword-tasks tasks -f tasks/deployments/Dockerfile
+```
+
+--------
+
+Run Auth Service Container
+
+```
+docker run --env-file auth/deployments/prod.env sword-auth
+```
+
+Run Notifications Service Container
+
+```
+docker run --env-file notifications/deployments/prod.env sword-notifications
+```
+
+Run Tasks Service Container
+
+```
+docker run --env-file tasks/deployments/prod.env sword-tasks
+```
+
+Run MySQL Composer
+
+```
+docker-compose -f tools/mysql/docker-compose.yml up
+```
+
+Run RabbitMQ Composer
+
+```
+docker-compose -f tools/rabbitmq/docker-compose.yml up
+```
 
 ## Conventions
 
