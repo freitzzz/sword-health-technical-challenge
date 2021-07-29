@@ -14,8 +14,6 @@ func RegisterHandlers(c *amqp.Connection, db *gorm.DB) {
 
 	ch, cerr := createChannel(c)
 
-	defer ch.Close()
-
 	if cerr != nil {
 		logging.LogError("Failed to create channel")
 		logging.LogError(cerr.Error())
