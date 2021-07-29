@@ -48,12 +48,12 @@ func DeleteNotification(c echo.Context) error {
 		return qerr
 	}
 
-	domain.MarkAsRead(notification)
+	nr := domain.MarkAsRead(notification, uc.ID)
 
-	_, uerr := data.UpdateNotification(db, *notification)
+	_, uerr := data.InsertNotificationRead(db, *nr)
 
 	if uerr != nil {
-		logging.LogError("Failed to update notification on database after marking it as read")
+		logging.LogError("Failed to insert notification read on database after marking it as read")
 		logging.LogError(uerr.Error())
 
 		return InternalServerError(c)
@@ -90,28 +90,28 @@ func requestEssentials(c echo.Context) (*gorm.DB, UserContext, error) {
 
 }
 
-func requestEssentialsWithNotificationID(c echo.Context) (*gorm.DB, UserContext, int, error) {
+func requestEssentialsWithNotificationID(c echo.Context) (*gorm.DB, UserContext, uint, error) {
 
 	nid, terr := strconv.Atoi(c.Param(notificationId))
 
 	db, uc, rerr := requestEssentials(c)
 
 	if rerr != nil {
-		return db, uc, nid, rerr
+		return db, uc, uint(nid), rerr
 	} else if terr != nil {
 		logging.LogError("Notification ID parse not successful, middlware allowed it in the first place")
 		logging.LogError(terr.Error())
 
 		InternalServerError(c)
 
-		return db, uc, nid, terr
+		return db, uc, uint(nid), terr
 	}
 
-	return db, uc, nid, nil
+	return db, uc, uint(nid), nil
 
 }
 
-func getNotificationFromDb(c echo.Context, db *gorm.DB, uc UserContext, nid int) (*domain.Notification, error) {
+func getNotificationFromDb(c echo.Context, db *gorm.DB, uc UserContext, nid uint) (*domain.Notification, error) {
 	notification, qerr := data.QueryUserNotificationById(db, uc.ID, nid)
 
 	if qerr != nil {
