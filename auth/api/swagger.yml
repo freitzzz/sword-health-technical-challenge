@@ -1,0 +1,28 @@
+openapi: 3.0.1
+info:
+  title: Authorization Service
+  description: Open API 3.0 documentation for authorization service RESTless API
+  version: 1.0.0
+externalDocs:
+  description: SWORD Health technical challenge
+  url: https://github.com/freitzzz/sword-health-technical-challenge
+tags:
+  - name: authenticate
+    description: Permits the authentication of managers and technicians
+paths:
+  /authenticate:
+    post:
+      tags:
+        - authenticate
+      summary: Generates authorization token based on manager/technician authentication
+      operationId: postAuthenticate
+      responses:
+        200:
+          description: Authentication completed and token was generated
+          headers:
+            auth:
+              schema:
+                type: string
+              description: JWT Token describing the authentication session.
+        401:
+          description: Invalid authorization access
