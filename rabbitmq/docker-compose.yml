@@ -1,0 +1,12 @@
+version: "2"
+services:
+  rabbit_node_1:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - rabbit1:/var/lib/rabbitmq
+volumes:
+  rabbit1:
+    driver: local
