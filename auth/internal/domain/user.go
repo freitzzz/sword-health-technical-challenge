@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -27,7 +29,7 @@ type User struct {
 type UserSession struct {
 	UserID          string
 	Token           string
-	ExpireTimestamp uint64
+	ExpireTimestamp int64
 	gorm.Model
 }
 
@@ -41,6 +43,22 @@ func NewManager(id string) User {
 	return User{Identifier: id, Secret: mockSecret, Role: manager}
 }
 
-func NewSession(u User) UserSession {
-	return UserSession{UserID: u, Token: }
+func ValidAuth(u User, uid string, s string) bool {
+	return u.Identifier == uid && u.Secret == s
+}
+
+func NewSession(u User, b JWTBundle) (UserSession, error) {
+
+	var us UserSession
+
+	exp := time.Now().AddDate(0, 0, 3).Unix()
+
+	jt, serr := SignUserSession(b, u, exp)
+
+	if serr == nil {
+		us = UserSession{UserID: u.Identifier, ExpireTimestamp: exp, Token: jt}
+	}
+
+	return us, serr
+
 }
