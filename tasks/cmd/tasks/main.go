@@ -11,7 +11,6 @@ import (
 
 func main() {
 
-	// Echo instance
 	e := echo.New()
 
 	defer e.Close()
@@ -65,6 +64,5 @@ func main() {
 
 	http.RegisterHandlers(e)
 
-	// Start server
-	e.Logger.Fatal(e.Start(":80"))
+	e.Logger.Fatal(e.Start(http.ServerAddress()))
 }
