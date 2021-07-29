@@ -7,20 +7,26 @@ import (
 type Notification struct {
 	UserID  string
 	Message string
-	Read    bool
 	gorm.Model
 }
 
-func New(uid string, message string) Notification {
+type NotificationRead struct {
+	UserID         string
+	NotificationID uint
+	gorm.Model
+}
+
+func New(message string) Notification {
 
 	return Notification{
-		UserID:  uid,
 		Message: message,
-		Read:    false,
 	}
 
 }
 
-func MarkAsRead(notification *Notification) {
-	notification.Read = true
+func MarkAsRead(notification *Notification, uid string) *NotificationRead {
+	return &NotificationRead{
+		UserID:         uid,
+		NotificationID: notification.ID,
+	}
 }
