@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/data"
+	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/domain"
 	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/http"
 	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/logging"
 	"github.com/labstack/echo/v4"
@@ -23,7 +24,9 @@ func main() {
 		panic("DB connection is required to serve HTTP calls")
 	}
 
-	http.RegisterMiddlewares(e, db)
+	jb := domain.LoadJWTBundle()
+
+	http.RegisterMiddlewares(e, db, jb)
 
 	http.RegisterHandlers(e)
 
