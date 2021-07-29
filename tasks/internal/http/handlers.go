@@ -76,7 +76,7 @@ func PerformTask(c echo.Context) error {
 
 	amqp.PublishNotification(mb, amqp.Notification{
 		UserID:  uc.ID,
-		Message: fmt.Sprintf("The tech %s performed the task %s on data %s", itask.UserID, domain.Summary(*itask, cb), itask.CreatedAt.String()),
+		Message: fmt.Sprintf("The tech %s performed the task %s on date %s", itask.UserID, domain.Summary(*itask, cb), itask.CreatedAt.String()),
 	})
 
 	return Created(c, ToTaskView(*itask, cb))
