@@ -1,6 +1,6 @@
 # Adapted from: https://medium.com/@chrischuck35/how-to-create-a-mysql-instance-with-docker-compose-1598f3cc1bee
 
-version: 2
+version: '2'
 services:
   db:
     image: mysql:5.7
