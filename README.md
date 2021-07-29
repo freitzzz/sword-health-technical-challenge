@@ -166,6 +166,12 @@ Read Notification
 curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost:81/notifications/:id' -i
 ```
 
+Authenticate
+
+```
+curl -XPOST -H  -H -H "Content-type: application/json" -d '{"id":"tech","secret":"sword"}' 'http://localhost:82/authenticate' -i
+```
+
 
 ## Conventions
 
