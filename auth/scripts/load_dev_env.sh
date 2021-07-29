@@ -22,5 +22,5 @@ export logging_absolute_filepath
 
 # JWT
 
-export jwt_auth=HS256
+export jwt_alg=HS256
 export jwt_secret=asmalltinykeythatisultrasecureee
