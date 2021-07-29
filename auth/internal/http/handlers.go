@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/data"
@@ -32,10 +33,15 @@ func Authenticate(c echo.Context) error {
 	u, qerr := data.QueryUserByIdentifier(db, ua.Identifier)
 
 	if qerr != nil {
+		logging.LogInfo(fmt.Sprintf("User identified by: %s was not found in database", ua.Identifier))
+		logging.LogError(qerr.Error())
+
 		return NotAuthorized(c)
 	}
 
 	if !domain.ValidAuth(*u, ua.Identifier, ua.Secret) {
+		logging.LogInfo(fmt.Sprintf("User identified by: %s failed to validate auth", ua.Identifier))
+
 		return NotAuthorized(c)
 	}
 
