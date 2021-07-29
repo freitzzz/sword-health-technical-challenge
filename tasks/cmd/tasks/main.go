@@ -51,6 +51,8 @@ func main() {
 
 	mb, serr := aqp.SetupMailBox(mqc)
 
+	defer mb.Channel.Close()
+
 	if serr != nil {
 
 		logging.LogError("Could not setup mail box")

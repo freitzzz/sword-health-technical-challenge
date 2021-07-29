@@ -27,8 +27,6 @@ func SetupMailBox(c *amqp.Connection) (MailBox, error) {
 
 	ch, cerr := createChannel(c)
 
-	defer ch.Close()
-
 	var mb MailBox
 
 	if cerr != nil {

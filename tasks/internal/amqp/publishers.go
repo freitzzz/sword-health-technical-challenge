@@ -5,11 +5,13 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func publishNotification(ch amqp.Channel, q amqp.Queue, n Notification) <-chan error {
+func PublishNotification(mb MailBox, n Notification) chan error {
 
 	r := make(chan error)
 
 	go func() {
+
+		defer close(r)
 
 		nb, merr := toBytes(n)
 
@@ -20,17 +22,19 @@ func publishNotification(ch amqp.Channel, q amqp.Queue, n Notification) <-chan e
 			r <- merr
 		} else {
 
-			perr := ch.Publish("", q.Name, false, false, amqp.Publishing{
+			perr := mb.Channel.Publish("", mb.Queue.Name, false, false, amqp.Publishing{
 				ContentType: "application/json",
 				Body:        nb,
 			})
 
-			r <- perr
-
 			if perr != nil {
+
 				logging.LogError("Failed to publish notification")
 				logging.LogError(perr.Error())
 
+			} else {
+
+				logging.LogWarning("Published notification")
 			}
 
 		}

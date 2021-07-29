@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/amqp"
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/data"
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/domain"
 	"github.com/freitzzz/sword-health-technical-challenge/tasks/internal/logging"
@@ -34,7 +35,7 @@ func GetTasks(c echo.Context) error {
 		return InvalidParamBadRequest(c, paginationIndexNotInteger)
 	}
 
-	db, uc, _, rerr := requestEssentials(c)
+	db, uc, _, _, rerr := requestEssentials(c)
 
 	if rerr != nil {
 		return rerr
@@ -48,7 +49,7 @@ func GetTasks(c echo.Context) error {
 
 func PerformTask(c echo.Context) error {
 
-	db, uc, cb, rerr := requestEssentials(c)
+	db, uc, cb, mb, rerr := requestEssentials(c)
 
 	if rerr != nil {
 		return rerr
@@ -72,6 +73,11 @@ func PerformTask(c echo.Context) error {
 
 		return InternalServerError(c)
 	}
+
+	amqp.PublishNotification(mb, amqp.Notification{
+		UserID:  uc.ID,
+		Message: fmt.Sprintf("The tech %s performed the task %s on data %s", itask.UserID, itask.Summary, itask.CreatedAt.String()),
+	})
 
 	return Created(c, ToTaskView(*itask, cb))
 
@@ -167,31 +173,38 @@ func useNotFoundHandler() func(c echo.Context) error {
 	}
 }
 
-func requestEssentials(c echo.Context) (*gorm.DB, UserContext, cipher.Block, error) {
+func requestEssentials(c echo.Context) (*gorm.DB, UserContext, cipher.Block, amqp.MailBox, error) {
 
 	db, dok := c.Get(dbMiddlewareKey).(*gorm.DB)
 	uc, uok := c.Get(ucMiddlewareKey).(UserContext)
 	cb, cok := c.Get(cbMiddlewareKey).(cipher.Block)
+	mb, mok := c.Get(mbMiddlewareKey).(amqp.MailBox)
 
 	if !dok {
 		logging.LogError("DB not available in middleware")
 
-		return db, uc, cb, InternalServerError(c)
+		return db, uc, cb, mb, InternalServerError(c)
 	}
 
 	if !uok {
 		logging.LogError("User Context not available in middleware")
 
-		return db, uc, cb, InternalServerError(c)
+		return db, uc, cb, mb, InternalServerError(c)
 	}
 
 	if !cok {
 		logging.LogError("Cipher Block not available in middleware")
 
-		return db, uc, cb, InternalServerError(c)
+		return db, uc, cb, mb, InternalServerError(c)
 	}
 
-	return db, uc, cb, nil
+	if !mok {
+		logging.LogError("Mail Box not available in middleware")
+
+		return db, uc, cb, mb, InternalServerError(c)
+	}
+
+	return db, uc, cb, mb, nil
 
 }
 
@@ -199,7 +212,7 @@ func requestEssentialsWithTaskID(c echo.Context) (*gorm.DB, UserContext, cipher.
 
 	tid, terr := strconv.Atoi(c.Param(taskId))
 
-	db, uc, cb, rerr := requestEssentials(c)
+	db, uc, cb, _, rerr := requestEssentials(c)
 
 	if rerr != nil {
 		return db, uc, cb, tid, rerr
