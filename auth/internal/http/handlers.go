@@ -3,6 +3,8 @@ package http
 import (
 	"net/http"
 
+	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/data"
+	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/domain"
 	"github.com/freitzzz/sword-health-technical-challenge/auth/internal/logging"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -17,35 +19,42 @@ func RegisterHandlers(e *echo.Echo) {
 
 func Authenticate(c echo.Context) error {
 
-	_, rerr := requestEssentials(c)
+	db, jb, rerr := requestEssentials(c)
 
 	if rerr != nil {
 		return rerr
 	}
 
-	// var tp TaskPerform
+	var ua UserAuth
 
-	// c.Bind(&tp)
+	c.Bind(&ua)
 
-	// task, nerr := domain.New(uc.ID, tp.Summary, cb)
+	u, qerr := data.QueryUserByIdentifier(db, ua.Identifier)
 
-	// if nerr != nil {
-	// 	return InvalidParamBadRequest(c, summaryExceeds2500Characters)
-	// }
+	if qerr != nil {
+		return NotAuthorized(c)
+	}
 
-	// itask, ierr := data.InsertTask(db, task)
+	if !domain.ValidAuth(*u, ua.Identifier, ua.Secret) {
+		return NotAuthorized(c)
+	}
 
-	// if ierr != nil {
-	// 	logging.LogError("Failed to insert task on database after creating it")
-	// 	logging.LogError(ierr.Error())
+	us, serr := domain.NewSession(*u, jb)
 
-	// 	return InternalServerError(c)
-	// }
+	if serr != nil {
+		return NotAuthorized(c)
+	}
 
-	// amqp.PublishNotification(mb, amqp.Notification{
-	// 	UserID:  uc.ID,
-	// 	Message: fmt.Sprintf("The tech %s performed the task %s on data %s", itask.UserID, domain.Summary(*itask, cb), itask.CreatedAt.String()),
-	// })
+	_, ierr := data.InsertUserSession(db, us)
+
+	if ierr != nil {
+		logging.LogError("Failed to insert user session on database after creating it")
+		logging.LogError(ierr.Error())
+
+		return NotAuthorized(c)
+	}
+
+	c.Response().Header().Add("Authorization: Bearer", us.Token)
 
 	return Ok(c)
 
@@ -57,16 +66,24 @@ func useNotFoundHandler() func(c echo.Context) error {
 	}
 }
 
-func requestEssentials(c echo.Context) (*gorm.DB, error) {
+func requestEssentials(c echo.Context) (*gorm.DB, domain.JWTBundle, error) {
 
 	db, dok := c.Get(dbMiddlewareKey).(*gorm.DB)
+
+	jb, lok := c.Get(jbMiddlewareKey).(domain.JWTBundle)
 
 	if !dok {
 		logging.LogError("DB not available in middleware")
 
-		return db, InternalServerError(c)
+		return db, jb, InternalServerError(c)
 	}
 
-	return db, nil
+	if !lok {
+		logging.LogError("JWT Bundle not available in middleware")
+
+		return db, jb, InternalServerError(c)
+	}
+
+	return db, jb, nil
 
 }
