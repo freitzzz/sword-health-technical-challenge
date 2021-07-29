@@ -153,13 +153,13 @@ curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: applicatio
 Get Notifications
 
 ```
-curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost/notifications' -i
+curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost:81/notifications' -i
 ```
 
 Read Notification
 
 ```
-curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost/notifications/:id' -i
+curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost:81/notifications/:id' -i
 ```
 
 
