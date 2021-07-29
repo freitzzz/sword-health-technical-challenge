@@ -140,56 +140,6 @@ Tests, mocking
 Authorization tokens can be cracked
 Environment variables
 
-## Testing
-
-Get Tasks
-
-```
-curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks?index=0' -i
-```
-
-Create Task
-
-```
-curl -XPOST -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" -d '{"summary":"abc"}' 'http://localhost/tasks' -i
-```
-
-Get Task
-
-```
-curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks/:id' -i
-```
-
-Update Task
-
-```
-curl -XPUT -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" -d '{"summary":"abc"}' 'http://localhost/tasks/:id' -i
-```
-
-Delete Task
-
-```
-curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks/:id' -i
-```
-
-Get Notifications
-
-```
-curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost:81/notifications' -i
-```
-
-Read Notification
-
-```
-curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost:81/notifications/:id' -i
-```
-
-Authenticate
-
-```
-curl -XPOST -H  -H -H "Content-type: application/json" -d '{"id":"tech","secret":"sword"}' 'http://localhost:82/authenticate' -i
-```
-
 ## Development
 
 First download module dependencies
@@ -274,6 +224,58 @@ Run RabbitMQ Composer
 
 ```
 docker-compose -f tools/rabbitmq/docker-compose.yml up
+```
+
+## Testing
+
+To manually test microservices APIs, the following sample curls can be used:
+
+Get Tasks
+
+```
+curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks?index=0' -i
+```
+
+Create Task
+
+```
+curl -XPOST -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" -d '{"summary":"abc"}' 'http://localhost/tasks' -i
+```
+
+Get Task
+
+```
+curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks/:id' -i
+```
+
+Update Task
+
+```
+curl -XPUT -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" -d '{"summary":"abc"}' 'http://localhost/tasks/:id' -i
+```
+
+Delete Task
+
+```
+curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 0' -H "Content-type: application/json" 'http://localhost/tasks/:id' -i
+```
+
+Get Notifications
+
+```
+curl -XGET -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost:81/notifications' -i
+```
+
+Read Notification
+
+```
+curl -XDELETE -H 'X-User-ID: x' -H 'X-User-Role: 1' -H "Content-type: application/json" 'http://localhost:81/notifications/:id' -i
+```
+
+Authenticate
+
+```
+curl -XPOST -H  -H -H "Content-type: application/json" -d '{"id":"tech","secret":"sword"}' 'http://localhost:82/authenticate' -i
 ```
 
 ## Conventions
