@@ -109,14 +109,15 @@ After receiving the notification message, notifications service stores it on a d
 
 For developing the system, I've selected the following libraries and tools:
 
-- [Echo](https://github.com/labstack/echo) as the web framework (serves its purpose, easy to use and had prior experience with it);
+- [Echo](https://github.com/labstack/echo) (v4) as the web framework (serves its purpose, easy to use and had prior experience with it);
 - [gorm](https://github.com/go-gorm/gorm) as the "ORM" (also prior experience with);
-- RabbitMQ;
-- API Gateway... TBD;
-- redoc for REST API documentation rendering;
-- Swagger Editor for developing REST API documentation.
-
-Golang version: `1.16`
+- [golang-jwt/jwt](https://github.com/golang-jwt/jwt) for JWT token signing;
+- [streadway/amqp](https://github.com/streadway/amqp) for AMQP connection;
+- [crypto/cipher](https://pkg.go.dev/crypto/cipher) for tasks summary encryption with AES-256;
+- RabbitMQ as the commander of the notification messages mailbox;
+- MySQL as the database instance for storing information;
+- Swagger Editor for developing RESTless APIs documentation;
+- Golang version: `1.16`.
 
 ## Outcomes
 
