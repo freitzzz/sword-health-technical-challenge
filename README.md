@@ -129,16 +129,21 @@ For developing the system, I've selected the following libraries and tools:
 
 ## Outcomes
 
-todo: create table explaining why certain things were not done and reflections in pain points and things to improve
+Overall, working on this challenge was pretty fun. I got to work on the "backend" of a system again after a ~1 year break (I'm focused on mobile development with Flutter now). Developing services with Go is extremely fun for various reasons: speed of development (no classes and OO in general), exceptions do not exist as they have replaced with error outputs in functions, compiling and running is fast, code cannot compile until warnings are fixed, and the list goes on.
 
-Major pain points, less proficient, etc...
-Things to improve
-Encryption a little bit ugly
-External vs Internal identifiers
-Duplicated Code
-Tests, mocking
-Authorization tokens can be cracked
-Environment variables
+Although the features required for the challenge have been developed, for future work some topics need to be addressed. I tried to go for a layered architecture, composed of the http (controllers), domain and data layers, and although the final product is readable and is shippable, some mistakes have been done along the way. For example, in some functions there are a lot of variables with one or two letters (e.g., nid) mixed with more long variables (e.g., notification), which is a bit confusing when reading the code.
+
+Encryption is also something that can be improved. I've tried to go for a functional style and pass the needed dependencies as function parameters. In this particular case, to create a task model, a cipher block struct is needed to be passed in the constructor function. On a domain and OO paradigm perspective, this is rather confusing as this behaviour and information should be encapsulated by the task model.
+
+Due to short time I've also didn't separate between external and internal identifiers, so I'm exposing the database identifier as the resource identifier, which is both bad in terms of domain description and security. Doing such segregation is a cumbersome task and would require more time to study the domain.
+
+A lot of code (specially in the http package) can be found duplicated throughout all microservices. A future improvement would be to promote such duplicated code as a public library (in the `/pkg` folder), in order to be used on all services without needing to declare it again.
+
+Everything that could be tested without mocks, has been tested. Unfortunately the remaining logic couldn't be unit tested as mocking in go is quite hard and is not compatible with all the code.
+
+For the authorization topic I've decided to use a state-of-art mechanism (JWT) that allowed to provide data in a token. This token encapsulates the identifier of the user as well as its role. Since these microservices are supposed to be private and hidden behind a gateway, I've done zero validation on token checks in the notifications and tasks microservice. Instead, I require two headers that identify the user and its role, and use it as input for the databases. Due to lack of time, API gateway was not implemented, but what was thought of was that the API manager behind this gateway performs some form of translation in the JWT token, in order to capture the user identifier and role, performing the request with this data on the headers. On a security perspective, following such approach can be a bit bad as JWT tokens can be cracked.
+
+On a final note, I've also not developed the kubernetes files to deploy and scale the system, notifications opt-in and prohibit users to interact in non-working days. For kubernetes, the reason these files weren't implemented was due to the lack of knowledge with this tool and the infrastructure / DevOps field.
 
 ## Development
 
