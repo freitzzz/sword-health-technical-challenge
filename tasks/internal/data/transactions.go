@@ -46,8 +46,6 @@ func InsertTask(db *gorm.DB, task domain.Task) (*domain.Task, error) {
 
 }
 
-// todo: remove "external" identification, use internal only. Justify no time for external
-
 func QueryTaskById(db *gorm.DB, tid int) (*domain.Task, error) {
 
 	var task domain.Task
