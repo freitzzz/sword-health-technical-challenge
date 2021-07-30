@@ -94,7 +94,7 @@ paths:
           schema:
             type: string
           required: true
-          description: External task ID
+          description: Task ID
       responses:
         200:
           description: Task retrieved
@@ -134,7 +134,7 @@ paths:
           schema:
             type: string
           required: true
-          description: External task ID
+          description: Task ID
       responses:
         200:
           description: Task updated
@@ -169,7 +169,7 @@ paths:
           schema:
             type: string
           required: true
-          description: External task ID
+          description: Task ID
       responses:
         204:
           description: Task deleted
@@ -205,7 +205,7 @@ components:
           type: string
         userId:
           type: string
-          description: External ID of the user that performed the task
+          description: ID of the user that performed the task
         summary:
           type: string
           maxLength: 2500
@@ -225,7 +225,7 @@ components:
           type: string
         userId:
           type: string
-          description: External ID of the user that performed the task
+          description: ID of the user that performed the task
     TaskPerform:
       required:
         - summary

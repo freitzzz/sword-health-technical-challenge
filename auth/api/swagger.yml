@@ -16,13 +16,34 @@ paths:
         - authenticate
       summary: Generates authorization token based on manager/technician authentication
       operationId: postAuthenticate
+      requestBody:
+        description: User auth
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAuth"
+        required: true
       responses:
         200:
           description: Authentication completed and token was generated
           headers:
-            auth:
+            Authorization:
               schema:
                 type: string
               description: JWT Token describing the authentication session.
         401:
           description: Invalid authorization access
+components:
+  schemas:
+    UserAuth:
+      required:
+        - id
+        - secret
+      type: object
+      properties:
+        id:
+          type: string
+          description: String that identifies the user on the system
+        secret:
+          type: string
+          description: Password used to validate user access
